@@ -15,6 +15,14 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+# Ignorar directorios específicos de IntelliJ
+.idea/
+
+# Ignorar carpetas generadas por IntelliJ
+*caches/
+*daemon/
+*native/
+
 
 ### Eclipse ###
 .apt_generated
