@@ -1,5 +1,9 @@
 package noticracia.entities;
 
+/**
+ * Contiene el {@code texto} y el {@code link} de la información brindada por una
+ * {@link noticracia.entities.InformationSource fuente de información}.
+ */
 public class Information {
 
     private String text;

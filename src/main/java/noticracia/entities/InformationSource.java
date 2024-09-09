@@ -3,7 +3,7 @@ package noticracia.entities;
 import java.util.Set;
 
 /**
- * Define la interfaz a implementar por las {@code fuentes de información}.
+ * Define la interfaz a implementar por las {@code fuentes de}  {@link noticracia.entities.Information información}.
  */
 public interface InformationSource {
 
