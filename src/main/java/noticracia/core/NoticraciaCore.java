@@ -1,7 +1,6 @@
 package noticracia.core;
 
 import lombok.Getter;
-import noticracia.entities.Information;
 import noticracia.entities.InformationSource;
 import noticracia.services.worldCloud.WordCloudGenerator;
 

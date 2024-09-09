@@ -1,12 +1,21 @@
 package noticracia.entities;
 
-import lombok.Data;
-
 import java.util.Set;
 
-@Data
-public abstract class InformationSource {
+/**
+ * Define la interfaz a implementar por las {@code fuentes de información}.
+ */
+public interface InformationSource {
 
-    public String name;
-    public abstract Set<Information> getInformation(String politician);
+    /**
+     * @return Nombre de la {@code fuente de información}.
+     */
+    String getName();
+
+    /**
+     *
+     * @param politicianName nombre del {@code candidato politico}.
+     * @return conjunto de {@link noticracia.entities.Information información} del {@code candidato politico}.
+     */
+    Set<Information> getInformation(String politicianName);
 }
