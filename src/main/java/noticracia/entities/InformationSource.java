@@ -8,13 +8,14 @@ import java.util.Set;
 public interface InformationSource {
 
     /**
-     * @return Nombre de la {@code fuente de información}.
+     * Devuelve el nombre de la {@code fuente de información}
+     * @return nombre {@link String}
      */
     String getName();
 
     /**
      *
-     * @param politicianName nombre del {@code candidato politico}.
+     * @param politicianName {@link String}.
      * @return conjunto de {@link noticracia.entities.Information información} del {@code candidato politico}.
      */
     Set<Information> getInformation(String politicianName);

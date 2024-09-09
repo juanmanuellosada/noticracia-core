@@ -11,11 +11,11 @@ import java.util.*;
 public class WordCloudGenerator {
 
     /**
-     * Genera una {@code nube de palabras} a partir del {@code nombre de un politico} y una {@code fuente de información}.
+     * Genera una {@code nube de palabras} a partir del {@code nombre de un politico} y una {@link noticracia.entities.InformationSource fuente de información}.
      *
-     * @param politicianName {@code String}
-     * @param source {@code InformationSource}
-     * @return wordCloud {@code Map<String, Integer>}
+     * @param politicianName {@link String}
+     * @param source {@link noticracia.entities.InformationSource InformationSource}
+     * @return nube de palabras {@link Map}<{@link String}, {@link Integer}>
      */
     public Map<String, Integer> generate(String politicianName, InformationSource source) {
         Map<String, Integer> wordCloud = new HashMap<>();
