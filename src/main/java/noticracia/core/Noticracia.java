@@ -9,12 +9,12 @@ import java.util.Observable;
 import java.util.Set;
 
 @SuppressWarnings("deprecation")
-public class NoticraciaCore extends Observable {
+public class Noticracia extends Observable {
 
     private final Set<InformationSource> informationSources;
     private final WordCloudGenerator wordCloudGenerator;
 
-    public NoticraciaCore(Set<InformationSource> informationSources) {
+    public Noticracia(Set<InformationSource> informationSources) {
         this.informationSources = informationSources;
         this.wordCloudGenerator = new WordCloudGenerator();
     }
