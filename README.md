@@ -22,9 +22,6 @@ Es la interfaz que representa la fuente de información. Tiene la capacidad de o
 ---
 title: Diagrama de clases
 ---
----
-title: Diagrama de clases
----
 classDiagram
     class Noticracia {
         -Set~InformationSource~ informationSources
