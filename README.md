@@ -22,6 +22,9 @@ Es la interfaz que representa la fuente de información. Tiene la capacidad de o
 ---
 title: Diagrama de clases
 ---
+---
+title: Diagrama de clases
+---
 classDiagram
     class Noticracia {
         -Set~InformationSource~ informationSources
@@ -46,4 +49,5 @@ classDiagram
 
     Noticracia "1" -- "*" InformationSource
     Noticracia "1" -- "1" WordCloudGenerator
+    InformationSource "1" -- "*" Information
 ```
