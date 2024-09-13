@@ -1,22 +1,9 @@
 package noticracia.entities;
 
-import java.util.Set;
+import java.util.Observable;
 
-/**
- * Define la interfaz a implementar por las {@code fuentes de}  {@link noticracia.entities.Information información}.
- */
-public interface InformationSource {
+public abstract class InformationSource extends Observable {
 
-    /**
-     * Devuelve el nombre de la {@code fuente de información}
-     * @return nombre {@link String}
-     */
-    String getName();
-
-    /**
-     *
-     * @param politicianName {@link String}.
-     * @return conjunto de {@link noticracia.entities.Information información} del {@code candidato politico}.
-     */
-    Set<Information> getInformation(String politicianName);
+    //Este notifica cuando termina
+    public abstract void startInformationCollection (String politician);
 }

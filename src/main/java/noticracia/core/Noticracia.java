@@ -1,35 +1,33 @@
 package noticracia.core;
 
 import noticracia.entities.InformationSource;
-import noticracia.services.worldCloud.WordCloudGenerator;
+import noticracia.services.worldCloud.WordCloud;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
-public class Noticracia extends Observable {
+public class Noticracia extends Observable implements Observer {
 
-    private final Set<InformationSource> informationSources;
-    private final WordCloudGenerator wordCloudGenerator;
+    private final WordCloud wordCloud;
+    private final InformationSource informationSource;
 
-    public Noticracia(Set<InformationSource> informationSources) {
-        this.informationSources = informationSources;
-        this.wordCloudGenerator = new WordCloudGenerator();
+    public Noticracia(InformationSource informationSource) {
+        this.informationSource = informationSource;
+        informationSource.addObserver(this);
+        wordCloud = new WordCloud();
     }
-    public Map<String, Integer> generateWorldCloud(String politician, InformationSource source) {
-        Map<String, Integer> worldCloud = wordCloudGenerator.generate(politician, source);
-        notifyObservers(worldCloud);
-        return worldCloud;
-    }
-
-    public List<String> getInformationSourcesNames() {
-        return informationSources.stream().map(InformationSource::getName).toList();
+    public void generateWorldCloud(Map<String,String> information) {
+        notifyObservers(wordCloud.generate(information));
     }
 
-    public Set<InformationSource> getInformationSources() {
-        return informationSources;
+    public void setPolitian(String politician) {
+        informationSource.startInformationCollection(politician);
     }
 
+    @Override
+    public void update(Observable o, Object information) {
+        if(o instanceof InformationSource) {
+            this.generateWorldCloud((Map<String, String>) information);
+        }
+    }
 }
