@@ -21,7 +21,7 @@ public class Noticracia extends Observable implements Observer {
         notifyObservers(wordCloud.generate(information));
     }
 
-    public void setPolitian(String politician) {
+    public void setPolitician(String politician) {
         informationSource.startInformationCollection(politician);
     }
 
