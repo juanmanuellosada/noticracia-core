@@ -17,6 +17,7 @@ public class Noticracia extends Observable implements Observer {
         wordCloud = new WordCloud();
     }
     public void generateWorldCloud(Map<String,String> information) {
+        setChanged();
         notifyObservers(wordCloud.generate(information));
     }
 
