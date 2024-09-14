@@ -1,12 +1,10 @@
 package noticracia.entities;
 
-import lombok.Data;
+import java.util.Observable;
 
-import java.util.Set;
+@SuppressWarnings("deprecation")
+public abstract class InformationSource extends Observable {
 
-@Data
-public abstract class InformationSource {
-
-    public String name;
-    public abstract Set<Information> getInformation(String politician);
+    //Este notifica cuando termina
+    public abstract void startInformationCollection (String politician);
 }

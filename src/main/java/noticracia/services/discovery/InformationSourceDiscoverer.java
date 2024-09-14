@@ -8,6 +8,6 @@ import java.util.Set;
 public class InformationSourceDiscoverer {
     // TODO: Descubrir implementaciones
     public Set<InformationSource> discover(String path) {
-        return new HashSet<InformationSource>();
+        return new HashSet<>();
     }
 }
