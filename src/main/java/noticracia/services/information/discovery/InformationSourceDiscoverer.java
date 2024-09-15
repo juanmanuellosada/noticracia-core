@@ -1,4 +1,4 @@
-package noticracia.services.discovery;
+package noticracia.services.information.discovery;
 
 import noticracia.entities.InformationSource;
 

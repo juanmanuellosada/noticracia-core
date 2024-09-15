@@ -1,34 +1,20 @@
 package noticracia.core;
 
+import noticracia.services.information.manager.InformationManager;
 import noticracia.entities.InformationSource;
-import noticracia.services.worldCloud.WordCloud;
 
 import java.util.*;
 
 @SuppressWarnings("deprecation")
-public class Noticracia extends Observable implements Observer {
+public class Noticracia extends Observable {
 
-    private final WordCloud wordCloud;
-    private final InformationSource informationSource;
+    private final InformationManager informationManager;
 
-    public Noticracia(InformationSource informationSource) {
-        this.informationSource = informationSource;
-        informationSource.addObserver(this);
-        wordCloud = new WordCloud();
-    }
-    public void generateWorldCloud(Map<String,String> information) {
-        setChanged();
-        notifyObservers(wordCloud.generate(information));
+    public Noticracia(InformationManager informationManager) {
+        this.informationManager = informationManager;
     }
 
-    public void setPolitician(String politician) {
-        informationSource.startInformationCollection(politician);
-    }
-
-    @Override
-    public void update(Observable o, Object information) {
-        if(o instanceof InformationSource) {
-            this.generateWorldCloud((Map<String, String>) information);
-        }
+    public void setQuery(InformationSource informationSource, String query) {
+        informationManager.startInformationCollection(informationSource, query);
     }
 }
