@@ -1,18 +1,26 @@
 package noticracia.services.information.manager;
 
+import noticracia.core.Noticracia;
 import noticracia.entities.InformationSource;
+import noticracia.services.worldCloud.WordCloud;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
-public class InformationManager extends Observable implements Observer {
+public class InformationManager implements Observer {
+    private Set<InformationSource> informationSources;
     private Map<String, String> lastSentInformation = new HashMap<>();
+    private final Noticracia noticracia;
 
+    public InformationManager(Set<InformationSource> informationSources, Noticracia noticracia) {
+        this.informationSources = informationSources;
+        this.noticracia = noticracia;
+
+        for (InformationSource informationSource : informationSources) {
+            informationSource.addObserver(this);
+        }
+    }
     public void startInformationCollection(InformationSource informationSource, String query) {
-        informationSource.addObserver(this);
         informationSource.startInformationCollection(query);
     }
 
@@ -21,15 +29,11 @@ public class InformationManager extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         if (o instanceof InformationSource && arg instanceof Map) {
             Map<String, String> currentInformation = (Map<String, String>) arg;
-            notifyObservers(currentInformation);
-        }
-    }
-
-    private void notifyObservers(Map<String, String> currentInformation) {
-        if (hasNewInformation(currentInformation)) {
-            lastSentInformation = new HashMap<>(currentInformation);
-            setChanged();
-            notifyObservers(currentInformation);
+            if (hasNewInformation(currentInformation)) {
+                lastSentInformation = new HashMap<>(currentInformation);
+                Map<String, Integer> wordCloud = WordCloud.generate(currentInformation);
+                noticracia.receiveWordCloud(wordCloud);
+            }
         }
     }
 

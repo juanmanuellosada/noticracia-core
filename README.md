@@ -7,31 +7,49 @@ title: Diagrama de clases
 classDiagram
     class Noticracia {
         -InformationManager informationManager
-        +Noticracia(InformationManager)
-        +setQuery(informationSource, query)
-        <<Observable>>
+        +Noticracia(String path)
+        +setQuery(InformationSource informationSource, String query)
+        +receiveWordCloud(Map~String, Integer~ wordCloud)
     }
 
     class InformationSource {
-        <<abstract, Observable>>
-        +startInformationCollection(query)
+        <<abstract>>
+        +startInformationCollection(String query)
+        addObserver(Observer o)
+    }
+
+    class InformationSourceFactory {
+        -InformationSourceDiscoverer discoverer
+        +createInformationSources(String path) Set~InformationSource~
+    }
+
+    class InformationSourceDiscoverer {
+        -Set~Class<? extends InformationSource>~ classes
+        +discover(String directoryPath) Set~Class<? extends InformationSource>~
+        +loadJarFiles(String directoryPath) File[]
+        +processJarFile(File file)
+        +processEntries(JarFile jarFile, URLClassLoader cl)
+        +loadClass(String className, URLClassLoader cl)
     }
 
     class InformationManager {
-        -lastSentInformation Map~String, String~
-        +startInformationCollection(InformationSource, String)
-        +hasNewInformation(Map~String, String~) boolean
-        +notifyObservers(Map~String, String~)
-        <<Observable,Observer>>
+        -Set~InformationSource~ informationSources
+        -Map~String, String~ lastSentInformation
+        -Noticracia noticracia
+        +InformationManager(Set~InformationSource~ informationSources, Noticracia noticracia)
+        +startInformationCollection(InformationSource informationSource, String query)
+        +update(Observable o, Object arg)
+        +hasNewInformation(Map~String, String~ currentInformation)
     }
 
     class WordCloud {
         +generate(Map~String, String~ information) Map~String, Integer~
-        <<static>>
     }
 
-    Noticracia --> InformationManager : uses
-    InformationManager --> InformationSource : observes
-    InformationSource --> InformationManager : "notify"
-    InformationManager ..> WordCloud : uses
+    Noticracia --> InformationManager : "Uses"
+    InformationManager --> InformationSource : "Observes"
+    InformationManager --> Noticracia : "Notifies"
+    InformationSource <|-- InformationSourceFactory : "Creates"
+    InformationSourceFactory --> InformationSourceDiscoverer : "Uses"
+    WordCloud ..> InformationManager : "Used by"
 ```
