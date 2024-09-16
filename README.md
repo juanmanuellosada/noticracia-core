@@ -75,5 +75,5 @@ sequenceDiagram
     InfoMgr->>+WordCloud: generate(information)
     WordCloud-->>-InfoMgr: return wordCloud
     InfoMgr-->>-Noticracia: receiveWordCloud(wordCloud)
-    Noticracia-->>-UI: displayWordCloud(wordCloud)
+    Noticracia-->>-UI: notifyObservers(wordCloud)
 ```
