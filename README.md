@@ -1,21 +1,21 @@
 ﻿# Noticracia
 
 ```mermaid
----
-title: Diagrama de clases
----
 classDiagram
     class Noticracia {
         -InformationManager informationManager
         +Noticracia(String path)
-        +setQuery(InformationSource informationSource, String query)
-        +receiveWordCloud(Map~String, Integer~ wordCloud)
+        +setQuery(InformationSource, String)
+        +receiveWordCloud(Map~String, Integer~)
     }
 
     class InformationSource {
-        <<abstract>>
-        +startInformationCollection(String query)
-        addObserver(Observer o)
+        -InformationManager informationManager
+        +InformationSource(InformationManager)
+        +startInformationCollection(String)
+        +processQuery(String) Map~String, String~
+        +getName() String
+        -postProcess(Map~String, String~)
     }
 
     class InformationSourceFactory {
@@ -25,31 +25,54 @@ classDiagram
 
     class InformationSourceDiscoverer {
         -Set~Class<? extends InformationSource>~ classes
-        +discover(String directoryPath) Set~Class<? extends InformationSource>~
-        +loadJarFiles(String directoryPath) File[]
-        +processJarFile(File file)
-        +processEntries(JarFile jarFile, URLClassLoader cl)
-        +loadClass(String className, URLClassLoader cl)
+        +discover(String) Set~Class<? extends InformationSource>~
+        +loadJarFiles(String) File[]
+        +processJarFile(File)
+        +processEntries(JarFile, URLClassLoader)
+        +loadClass(String, URLClassLoader)
     }
 
     class InformationManager {
         -Set~InformationSource~ informationSources
         -Map~String, String~ lastSentInformation
         -Noticracia noticracia
-        +InformationManager(Set~InformationSource~ informationSources, Noticracia noticracia)
-        +startInformationCollection(InformationSource informationSource, String query)
-        +update(Observable o, Object arg)
-        +hasNewInformation(Map~String, String~ currentInformation)
+        +InformationManager(Set~InformationSource~, Noticracia)
+        +startInformationCollection(InformationSource, String query)
+        +refreshInformation(Map~String, String~)
+        +getInformationSourcesNames() Set~String~
     }
 
     class WordCloud {
-        +generate(Map~String, String~ information) Map~String, Integer~
+        +generate(Map~String, Integer~) Map~String, String~
     }
 
-    Noticracia --> InformationManager : "Uses"
-    InformationManager --> InformationSource : "Observes"
-    InformationManager --> Noticracia : "Notifies"
-    InformationSource <|-- InformationSourceFactory : "Creates"
-    InformationSourceFactory --> InformationSourceDiscoverer : "Uses"
-    WordCloud ..> InformationManager : "Used by"
+    Noticracia --> InformationManager : Uses
+    InformationManager --> InformationSource : Manages
+    InformationSource *-- InformationManager : "Dependency"
+    InformationSourceFactory --> InformationSourceDiscoverer : Uses
+    InformationSourceFactory --> InformationSource : Creates
+    InformationManager --> WordCloud : Uses for generating word clouds
+    InformationSource --> Noticracia : Notifies for word clouds
+```
+
+```mermaid
+participant UI as User Interface
+participant Controller as UI Controller
+participant Noticracia
+participant InfoMgr as InformationManager
+participant InfoSrc as InformationSource
+participant WordCloud
+
+UI->>+Controller: User selects candidate and query
+Controller->>+Noticracia: setQuery(InformationSource, query)
+Noticracia->>+InfoMgr: startInformationCollection(InformationSource, query)
+InfoMgr->>+InfoSrc: startInformationCollection(query)
+activate InfoSrc
+InfoSrc->>InfoSrc: processQuery(query)
+deactivate InfoSrc
+InfoSrc->>-InfoMgr: postProcess(information)
+InfoMgr->>+WordCloud: generate(information)
+WordCloud-->>-InfoMgr: return wordCloud
+InfoMgr-->>-Noticracia: receiveWordCloud(wordCloud)
+Noticracia-->>-UI: displayWordCloud(wordCloud)
 ```

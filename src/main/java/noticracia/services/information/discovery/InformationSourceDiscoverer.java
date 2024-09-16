@@ -14,11 +14,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class InformationSourceDiscoverer {
-    private final Set<Class<? extends InformationSource>> classes;
-
-    public InformationSourceDiscoverer() {
-        this.classes = new HashSet<>();
-    }
+    private final Set<Class<? extends InformationSource>> classes = new HashSet<>();
 
     public Set<Class<? extends InformationSource>> discover(String directoryPath) {
         File[] files = loadJarFiles(directoryPath);

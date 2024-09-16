@@ -5,39 +5,30 @@ import noticracia.entities.InformationSource;
 import noticracia.services.worldCloud.WordCloud;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("deprecation")
-public class InformationManager implements Observer {
-    private Set<InformationSource> informationSources;
+public class InformationManager {
+    private final Set<InformationSource> informationSources;
     private Map<String, String> lastSentInformation = new HashMap<>();
     private final Noticracia noticracia;
 
     public InformationManager(Set<InformationSource> informationSources, Noticracia noticracia) {
         this.informationSources = informationSources;
         this.noticracia = noticracia;
-
-        for (InformationSource informationSource : informationSources) {
-            informationSource.addObserver(this);
-        }
     }
     public void startInformationCollection(InformationSource informationSource, String query) {
         informationSource.startInformationCollection(query);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void update(Observable o, Object arg) {
-        if (o instanceof InformationSource && arg instanceof Map) {
-            Map<String, String> currentInformation = (Map<String, String>) arg;
-            if (hasNewInformation(currentInformation)) {
-                lastSentInformation = new HashMap<>(currentInformation);
-                Map<String, Integer> wordCloud = WordCloud.generate(currentInformation);
-                noticracia.receiveWordCloud(wordCloud);
-            }
+    public void refreshInformation(Map<String, String> information) {
+        if (!information.equals(lastSentInformation)) {
+            lastSentInformation = new HashMap<>(information);
+            Map<String, Integer> wordCloud = WordCloud.generate(information);
+            noticracia.receiveWordCloud(wordCloud);
         }
     }
 
-    private boolean hasNewInformation(Map<String, String> currentInformation) {
-        return !currentInformation.equals(lastSentInformation);
+    public Set<String> getInformationSourcesNames() {
+        return informationSources.stream().map(InformationSource::getName).collect(Collectors.toSet());
     }
 }
