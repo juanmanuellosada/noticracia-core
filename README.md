@@ -56,23 +56,32 @@ classDiagram
 ```
 
 ```mermaid
-participant UI as User Interface
-participant Controller as UI Controller
-participant Noticracia
-participant InfoMgr as InformationManager
-participant InfoSrc as InformationSource
-participant WordCloud
+sequenceDiagram
+    participant UI as User Interface
+    participant Controller as UI Controller
 
-UI->>+Controller: User selects candidate and query
-Controller->>+Noticracia: setQuery(InformationSource, query)
-Noticracia->>+InfoMgr: startInformationCollection(InformationSource, query)
-InfoMgr->>+InfoSrc: startInformationCollection(query)
-activate InfoSrc
-InfoSrc->>InfoSrc: processQuery(query)
-deactivate InfoSrc
-InfoSrc->>-InfoMgr: postProcess(information)
-InfoMgr->>+WordCloud: generate(information)
-WordCloud-->>-InfoMgr: return wordCloud
-InfoMgr-->>-Noticracia: receiveWordCloud(wordCloud)
-Noticracia-->>-UI: displayWordCloud(wordCloud)
+    rect stroke-dasharray="5 5" stroke="gray" fill-opacity="0"
+        note right of UI: UI Project
+        UI->>+Controller: User selects candidate and query
+        Controller->>+Noticracia: setQuery(InformationSource, query)
+    end
+
+    rect stroke-dasharray="5 5" stroke="gray" fill-opacity="0"
+        participant Noticracia
+        participant InfoMgr as InformationManager
+        participant InfoSrc as InformationSource
+        participant WordCloud
+
+        note right of Noticracia: Core Project
+        Noticracia->>+InfoMgr: startInformationCollection(InformationSource, query)
+        InfoMgr->>+InfoSrc: startInformationCollection(query)
+        activate InfoSrc
+        InfoSrc->>InfoSrc: processQuery(query)
+        deactivate InfoSrc
+        InfoSrc->>-InfoMgr: postProcess(information)
+        InfoMgr->>+WordCloud: generate(information)
+        WordCloud-->>-InfoMgr: return wordCloud
+        InfoMgr-->>-Noticracia: receiveWordCloud(wordCloud)
+        Noticracia-->>-UI: displayWordCloud(wordCloud)
+    end
 ```
