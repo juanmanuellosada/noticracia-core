@@ -16,7 +16,7 @@ public class Noticracia extends Observable {
         informationManager = new InformationManager(informationSourceFactory.createInformationSources(path), this);
     }
 
-    public void setQuery(InformationSource informationSource, String query) {
+    public void selectQuery(InformationSource informationSource, String query) {
         informationManager.startInformationCollection(informationSource, query);
     }
 
