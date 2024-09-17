@@ -1,6 +1,5 @@
 package noticracia.entities;
 
-
 import noticracia.services.information.manager.InformationManager;
 
 import java.util.Map;
@@ -12,10 +11,12 @@ public abstract class InformationSource {
     public InformationSource(InformationManager informationManager) {
         this.informationManager = informationManager;
     }
+
     public void startInformationCollection(String query){
-        postProcess(processQuery(query));
+        postProcess(process(query));
     }
-    public abstract Map<String, String> processQuery(String query);
+
+    public abstract Map<String, String> process(String query);
 
     public abstract String getName();
 
