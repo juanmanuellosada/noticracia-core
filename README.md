@@ -3,14 +3,14 @@
 ```mermaid
 classDiagram
     class Noticracia {
-        -InformationManager informationManager
+        -InformationManager informationSourceBroker
         +Noticracia(String path)
         +setQuery(InformationSource, String)
         +receiveWordCloud(Map~String, Integer~)
     }
 
     class InformationSource {
-        -InformationManager informationManager
+        -InformationManager informationSourceBroker
         +InformationSource(InformationManager)
         +startInformationCollection(String)
         +processQuery(String) Map~String, String~

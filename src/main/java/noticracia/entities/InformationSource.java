@@ -1,15 +1,15 @@
 package noticracia.entities;
 
-import noticracia.services.information.manager.InformationManager;
+import noticracia.services.information.manager.InformationSourceBroker;
 
 import java.util.Map;
 
 public abstract class InformationSource {
 
-    private final InformationManager informationManager;
+    private final InformationSourceBroker informationSourceBroker;
 
-    public InformationSource(InformationManager informationManager) {
-        this.informationManager = informationManager;
+    public InformationSource(InformationSourceBroker informationSourceBroker) {
+        this.informationSourceBroker = informationSourceBroker;
     }
 
     public void startInformationCollection(String query){
@@ -21,6 +21,6 @@ public abstract class InformationSource {
     public abstract String getName();
 
     private void postProcess(Map<String, String> information) {
-        informationManager.refreshInformation(information);
+        informationSourceBroker.refreshInformation(information);
     }
 }

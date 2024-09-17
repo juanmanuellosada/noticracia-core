@@ -7,12 +7,12 @@ import noticracia.services.worldCloud.WordCloud;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class InformationManager {
+public class InformationSourceBroker {
     private final Set<InformationSource> informationSources;
     private Map<String, String> lastSentInformation = new HashMap<>();
     private final Noticracia noticracia;
 
-    public InformationManager(Set<InformationSource> informationSources, Noticracia noticracia) {
+    public InformationSourceBroker(Set<InformationSource> informationSources, Noticracia noticracia) {
         this.informationSources = informationSources;
         this.noticracia = noticracia;
     }
