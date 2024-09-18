@@ -1,4 +1,4 @@
-package noticracia.services.information.manager;
+package noticracia.services.information.broker;
 
 import noticracia.core.Noticracia;
 import noticracia.entities.InformationSource;

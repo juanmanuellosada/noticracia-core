@@ -1,6 +1,6 @@
 package noticracia.entities;
 
-import noticracia.services.information.manager.InformationSourceBroker;
+import noticracia.services.information.broker.InformationSourceBroker;
 
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package noticracia.core;
 
 import noticracia.services.information.factory.InformationSourceFactory;
-import noticracia.services.information.manager.InformationSourceBroker;
+import noticracia.services.information.broker.InformationSourceBroker;
 
 import java.util.*;
 
