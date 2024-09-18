@@ -6,31 +6,36 @@ import noticracia.services.worldCloud.WordCloud;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class InformationSourceBroker {
-    private final Map<String, InformationSource> informationSources;
-    private Map<String, String> lastSentInformation = new HashMap<>();
+    private final Map<String, String> lastSentInformation = new HashMap<>();
     private final Noticracia noticracia;
+    private InformationSource currentInformationSource;
 
-    public InformationSourceBroker(Map<String, InformationSource> informationSources, Noticracia noticracia) {
-        this.informationSources = informationSources;
+    public InformationSourceBroker(Noticracia noticracia) {
         this.noticracia = noticracia;
     }
 
-    public void startInformationCollection(String informationSourceName, String searchCriteria) {
-        this.informationSources.get(informationSourceName).startInformationCollection(searchCriteria);
-    }
-
-    public void refreshInformation(Map<String, String> information) {
-        if (!information.equals(lastSentInformation)) {
-            lastSentInformation = new HashMap<>(information);
-            Map<String, Integer> wordCloud = WordCloud.generate(information);
-            noticracia.receiveWordCloud(wordCloud);
+    public boolean startInformationCollection(InformationSource informationSource, String searchCriteria) {
+        if (Objects.isNull(currentInformationSource) ||
+                !currentInformationSource.getName().equals(informationSource.getName())) {
+            if (Objects.nonNull(currentInformationSource)) {
+                currentInformationSource.stopProcess();
+            }
+            currentInformationSource = informationSource;
         }
+        return currentInformationSource.startProcess(searchCriteria);
     }
 
-    public Set<String> getInformationSourcesNames() {
-        return informationSources.keySet();
+    public boolean refreshInformation(Map<String, String> information) {
+        if (!information.equals(lastSentInformation)) {
+            lastSentInformation.putAll(information);
+            noticracia.generateWordCloud(information);
+            return true;
+        }
+        return false;
     }
+
 }

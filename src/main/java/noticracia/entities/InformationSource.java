@@ -11,15 +11,13 @@ public abstract class InformationSource {
         this.informationSourceBroker = informationSourceBroker;
     }
 
-    public void startInformationCollection(String searchCriteria){
-        refresh(process(searchCriteria));
-    }
+    public abstract boolean startProcess(String searchCriteria);
 
-    public abstract Map<String, String> process(String searchCriteria);
+    public abstract void stopProcess();
 
     public abstract String getName();
 
-    public void refresh(Map<String, String> information) {
-        informationSourceBroker.refreshInformation(information);
+    public final boolean refresh(Map<String, String> information) {
+        return informationSourceBroker.refreshInformation(information);
     }
 }
