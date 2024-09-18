@@ -19,7 +19,7 @@ public abstract class InformationSource {
 
     public abstract String getName();
 
-    private void refresh(Map<String, String> information) {
+    public void refresh(Map<String, String> information) {
         informationSourceBroker.refreshInformation(information);
     }
 }
