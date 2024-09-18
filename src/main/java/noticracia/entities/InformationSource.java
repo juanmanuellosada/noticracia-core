@@ -12,8 +12,8 @@ public abstract class InformationSource {
         this.informationSourceBroker = informationSourceBroker;
     }
 
-    public void startInformationCollection(String query){
-        postProcess(process(query));
+    public void startInformationCollection(String searchCriteria){
+        postProcess(process(searchCriteria));
     }
 
     public abstract Map<String, String> process(String query);

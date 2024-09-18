@@ -16,8 +16,8 @@ public class InformationSourceBroker {
         this.informationSources = informationSources;
         this.noticracia = noticracia;
     }
-    public void startInformationCollection(InformationSource informationSource, String query) {
-        informationSource.startInformationCollection(query);
+    public void startInformationCollection(InformationSource informationSource, String searchCriteria) {
+        informationSource.startInformationCollection(searchCriteria);
     }
 
     public void refreshInformation(Map<String, String> information) {

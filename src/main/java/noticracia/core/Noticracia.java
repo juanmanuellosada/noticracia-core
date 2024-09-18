@@ -16,8 +16,8 @@ public class Noticracia extends Observable {
         informationSourceBroker = new InformationSourceBroker(informationSourceFactory.createInformationSources(path), this);
     }
 
-    public void selectQuery(InformationSource informationSource, String query) {
-        informationSourceBroker.startInformationCollection(informationSource, query);
+    public void selectSearchCriteria(InformationSource informationSource, String searchCriteria) {
+        informationSourceBroker.startInformationCollection(informationSource, searchCriteria);
     }
 
     public void receiveWordCloud(Map<String, Integer> wordCloud) {
