@@ -2,12 +2,10 @@ package noticracia.services.information.broker;
 
 import noticracia.core.Noticracia;
 import noticracia.entities.InformationSource;
-import noticracia.services.worldCloud.WordCloud;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class InformationSourceBroker {
     private final Map<String, String> lastSentInformation = new HashMap<>();

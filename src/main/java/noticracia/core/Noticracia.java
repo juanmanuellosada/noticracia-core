@@ -14,9 +14,9 @@ public class Noticracia extends Observable {
     private final InformationSourceBroker informationSourceBroker;
 
     public Noticracia(String path) {
-        InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
-        this.informationSources = informationSourceFactory.createInformationSources(path);
         informationSourceBroker = new InformationSourceBroker(this);
+        InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
+        this.informationSources = informationSourceFactory.createInformationSources(path, informationSourceBroker);
     }
 
     public boolean selectSearchCriteria(String informationSourceName, String searchCriteria) {
