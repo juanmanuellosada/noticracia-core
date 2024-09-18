@@ -15,7 +15,7 @@ public abstract class InformationSource {
         refresh(process(searchCriteria));
     }
 
-    public abstract Map<String, String> process(String query);
+    public abstract Map<String, String> process(String searchCriteria);
 
     public abstract String getName();
 
