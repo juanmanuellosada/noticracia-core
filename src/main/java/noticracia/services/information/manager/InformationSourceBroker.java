@@ -4,20 +4,22 @@ import noticracia.core.Noticracia;
 import noticracia.entities.InformationSource;
 import noticracia.services.worldCloud.WordCloud;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class InformationSourceBroker {
-    private final Set<InformationSource> informationSources;
+    private final Map<String, InformationSource> informationSources;
     private Map<String, String> lastSentInformation = new HashMap<>();
     private final Noticracia noticracia;
 
-    public InformationSourceBroker(Set<InformationSource> informationSources, Noticracia noticracia) {
+    public InformationSourceBroker(Map<String, InformationSource> informationSources, Noticracia noticracia) {
         this.informationSources = informationSources;
         this.noticracia = noticracia;
     }
-    public void startInformationCollection(InformationSource informationSource, String searchCriteria) {
-        informationSource.startInformationCollection(searchCriteria);
+
+    public void startInformationCollection(String informationSourceName, String searchCriteria) {
+        this.informationSources.get(informationSourceName).startInformationCollection(searchCriteria);
     }
 
     public void refreshInformation(Map<String, String> information) {
@@ -29,6 +31,6 @@ public class InformationSourceBroker {
     }
 
     public Set<String> getInformationSourcesNames() {
-        return informationSources.stream().map(InformationSource::getName).collect(Collectors.toSet());
+        return informationSources.keySet();
     }
 }

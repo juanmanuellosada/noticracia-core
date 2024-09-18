@@ -3,21 +3,22 @@ package noticracia.services.information.factory;
 import noticracia.entities.InformationSource;
 import noticracia.services.information.discovery.InformationSourceDiscoverer;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class InformationSourceFactory {
 
     private final InformationSourceDiscoverer discoverer = new InformationSourceDiscoverer();
 
-    public Set<InformationSource> createInformationSources(String path) {
-        Set<InformationSource> sources = new HashSet<>();
+    public Map<String, InformationSource> createInformationSources(String path) {
+        Map<String, InformationSource> sources = new HashMap<>();
         Set<Class<? extends InformationSource>> classes = discoverer.discover(path);
 
         for (Class<? extends InformationSource> cls : classes) {
             try {
                 InformationSource source = cls.getDeclaredConstructor().newInstance();
-                sources.add(source);
+                sources.put(source.getName(), source);
             } catch (Exception e) {
                 System.err.println("Error instantiating InformationSource from class " + cls.getName() + ": " + e.getMessage());
             }

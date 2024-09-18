@@ -2,7 +2,6 @@ package noticracia.core;
 
 import noticracia.services.information.factory.InformationSourceFactory;
 import noticracia.services.information.manager.InformationSourceBroker;
-import noticracia.entities.InformationSource;
 
 import java.util.*;
 
@@ -16,8 +15,8 @@ public class Noticracia extends Observable {
         informationSourceBroker = new InformationSourceBroker(informationSourceFactory.createInformationSources(path), this);
     }
 
-    public void selectSearchCriteria(InformationSource informationSource, String searchCriteria) {
-        informationSourceBroker.startInformationCollection(informationSource, searchCriteria);
+    public void selectSearchCriteria(String informationSourceName, String searchCriteria) {
+        informationSourceBroker.startInformationCollection(informationSourceName, searchCriteria);
     }
 
     public void receiveWordCloud(Map<String, Integer> wordCloud) {
