@@ -24,7 +24,7 @@ public class InformationSourceBroker {
         return currentInformationSource.startProcess(searchCriteria);
     }
 
-    public boolean isNotCurrentInformationSource(InformationSource informationSource) {
+    private boolean isNotCurrentInformationSource(InformationSource informationSource) {
         return Objects.nonNull(currentInformationSource) &&
                 !currentInformationSource.getName().equals(informationSource.getName());
     }
