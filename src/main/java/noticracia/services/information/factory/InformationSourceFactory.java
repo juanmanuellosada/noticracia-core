@@ -18,7 +18,7 @@ public class InformationSourceFactory {
 
         for (Class<? extends InformationSource> cls : classes) {
             try {
-                InformationSource source = cls.getDeclaredConstructor().newInstance(broker);
+                InformationSource source = cls.getConstructor(InformationSourceBroker.class).newInstance(broker);
                 sources.put(source.getName(), source);
             } catch (Exception e) {
                 System.err.println("Error instantiating InformationSource from class " + cls.getName() + ": " + e.getMessage());
