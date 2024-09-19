@@ -6,6 +6,7 @@ import noticracia.entities.InformationSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class InformationSourceBroker {
     private final Map<String, String> lastSentInformation = new HashMap<>();
@@ -17,15 +18,15 @@ public class InformationSourceBroker {
     }
 
     public boolean startInformationCollection(InformationSource informationSource, String searchCriteria) {
-        if (isNotCurrentInformationSource(informationSource)) {
-            currentInformationSource.stopProcess();
+        if (isDifferentSource(informationSource)) {
+            Optional.ofNullable(currentInformationSource).ifPresent(InformationSource::stopProcess);
             currentInformationSource = informationSource;
         }
         return currentInformationSource.startProcess(searchCriteria);
     }
 
-    private boolean isNotCurrentInformationSource(InformationSource informationSource) {
-        return Objects.nonNull(currentInformationSource) &&
+    private boolean isDifferentSource(InformationSource informationSource) {
+        return Objects.isNull(currentInformationSource) ||
                 !currentInformationSource.getName().equals(informationSource.getName());
     }
 
