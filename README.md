@@ -1,50 +1,79 @@
 ﻿# Noticracia
- 
-Noticracia es un sistema que genera una nube de palabras la cual refleja las percepciones y temas predominantes asociados con un candidato político.
-
-## Clases
-
-### `NoticraciaCore`
-
-Clase del modelo, tiene lo necesario para generar la nube de palabras. Tiene el atributo `Set<InformationSource> informationSources` que son todas las fuentes de información sobre las que puede generar una nube de palabras. También tiene el atributo `WordCloudGenerator` que es el generador de nubes de palabras.
-
-El método `generateWorldCloud` es el encargado de devolver la nube de palabras armada en base a un nombre de candidato político dado, y una fuente de información dada.
-
-### `Information`
-
-Corresponde a la representación de lo que se encuentra en las fuentes de información. Contiene el atributo `text` que tendrá el valor de lo que se haya recolectado de la fuente de información y,  el atributo `link`, que contendrá una dirección web de la fuente directa de esta información.
-
-### `InformationSource`
-
-Es la interfaz que representa la fuente de información. Tiene la capacidad de obtener información sobre un político. Esta interfaz podra ser implementada por cada _plugin_ que se use en el sistema. Tiene dos metodos a implementar, el primero,  `getInformation` asegura que sus implementacion encuentren, a su forma, información sobre el nombre del candidato político dado y, el segundo, `getName` permite a obtener el nombre de la fuente que utiliza implementación.
 
 ```mermaid
----
-title: Diagrama de clases
----
 classDiagram
     class Noticracia {
-        -Set~InformationSource~ informationSources
-        -WordCloudGenerator wordCloudGenerator
-        +generateWorldCloud(String, InformationSource) Map~String, Integer~
-        +getInformationSourcesNames() List~String~
-    }
-    class InformationSource {
-        <<interface>>
-        +getName() String
-        +getInformation(String) Set~Information~
-    }
-    class WordCloudGenerator {
-        +generate(String, InformationSource) Map~String, Integer~
-    }
-    class Information {
-        -String text
-        -String link
-        +getText() String
-        +getLink() String
+        -InformationManager informationSourceBroker
+        +Noticracia(String path)
+        +setQuery(InformationSource, String)
+        +receiveWordCloud(Map~String, Integer~)
     }
 
-    Noticracia "1" -- "*" InformationSource
-    Noticracia "1" -- "1" WordCloudGenerator
-    InformationSource "1" -- "*" Information
+    class InformationSource {
+        -InformationManager informationSourceBroker
+        +InformationSource(InformationManager)
+        +startInformationCollection(String)
+        +processQuery(String) Map~String, String~
+        +getName() String
+        -postProcess(Map~String, String~)
+    }
+
+    class InformationSourceFactory {
+        -InformationSourceDiscoverer discoverer
+        +createInformationSources(String path) Set~InformationSource~
+    }
+
+    class InformationSourceDiscoverer {
+        -Set~Class<? extends InformationSource>~ classes
+        +discover(String) Set~Class<? extends InformationSource>~
+        +loadJarFiles(String) File[]
+        +processJarFile(File)
+        +processEntries(JarFile, URLClassLoader)
+        +loadClass(String, URLClassLoader)
+    }
+
+    class InformationManager {
+        -Set~InformationSource~ informationSources
+        -Map~String, String~ lastSentInformation
+        -Noticracia noticracia
+        +InformationManager(Set~InformationSource~, Noticracia)
+        +startInformationCollection(InformationSource, String query)
+        +refreshInformation(Map~String, String~)
+        +getInformationSourcesNames() Set~String~
+    }
+
+    class WordCloud {
+        +generate(Map~String, Integer~) Map~String, String~
+    }
+
+    Noticracia --> InformationManager : Uses
+    InformationManager --> InformationSource : Manages
+    InformationSource *-- InformationManager : "Dependency"
+    InformationSourceFactory --> InformationSourceDiscoverer : Uses
+    InformationSourceFactory --> InformationSource : Creates
+    InformationManager --> WordCloud : Uses for generating word clouds
+    InformationSource --> Noticracia : Notifies for word clouds
+```
+
+```mermaid
+sequenceDiagram
+    participant UI as User Interface
+    participant Controller as UI Controller
+    participant Noticracia
+    participant InfoMgr as InformationManager
+    participant InfoSrc as InformationSource
+    participant WordCloud
+
+    UI->>+Controller: User selects candidate and query
+    Controller->>+Noticracia: setQuery(InformationSource, query)
+    Noticracia->>+InfoMgr: startInformationCollection(InformationSource, query)
+    InfoMgr->>+InfoSrc: startInformationCollection(query)
+    activate InfoSrc
+    InfoSrc->>InfoSrc: processQuery(query)
+    deactivate InfoSrc
+    InfoSrc->>-InfoMgr: postProcess(information)
+    InfoMgr->>+WordCloud: generate(information)
+    WordCloud-->>-InfoMgr: return wordCloud
+    InfoMgr-->>-Noticracia: receiveWordCloud(wordCloud)
+    Noticracia-->>-UI: notifyObservers(wordCloud)
 ```

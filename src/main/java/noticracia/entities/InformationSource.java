@@ -1,10 +1,23 @@
 package noticracia.entities;
 
-import java.util.Observable;
+import noticracia.services.information.broker.InformationSourceBroker;
 
-@SuppressWarnings("deprecation")
-public abstract class InformationSource extends Observable {
+import java.util.Map;
 
-    //Este notifica cuando termina
-    public abstract void startInformationCollection (String politician);
+public abstract class InformationSource {
+    private final InformationSourceBroker informationSourceBroker;
+
+    public InformationSource(InformationSourceBroker informationSourceBroker) {
+        this.informationSourceBroker = informationSourceBroker;
+    }
+
+    public abstract boolean startProcess(String searchCriteria);
+
+    public abstract void stopProcess();
+
+    public abstract String getName();
+
+    public final boolean refresh(Map<String, String> information) {
+        return informationSourceBroker.refreshInformation(information);
+    }
 }

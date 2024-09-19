@@ -1,34 +1,36 @@
 package noticracia.core;
 
 import noticracia.entities.InformationSource;
+import noticracia.services.information.factory.InformationSourceFactory;
+import noticracia.services.information.broker.InformationSourceBroker;
 import noticracia.services.worldCloud.WordCloud;
 
 import java.util.*;
 
 @SuppressWarnings("deprecation")
-public class Noticracia extends Observable implements Observer {
+public class Noticracia extends Observable {
 
-    private final WordCloud wordCloud;
-    private final InformationSource informationSource;
+    private final Map<String, InformationSource> informationSources;
+    private final InformationSourceBroker informationSourceBroker;
 
-    public Noticracia(InformationSource informationSource) {
-        this.informationSource = informationSource;
-        informationSource.addObserver(this);
-        wordCloud = new WordCloud();
+    public Noticracia(String path) {
+        informationSourceBroker = new InformationSourceBroker(this);
+        InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
+        this.informationSources = informationSourceFactory.createInformationSources(path, informationSourceBroker);
     }
-    public void generateWorldCloud(Map<String,String> information) {
+
+    public boolean selectSearchCriteria(String informationSourceName, String searchCriteria) {
+        return informationSourceBroker
+                .startInformationCollection(this.informationSources.get(informationSourceName), searchCriteria);
+    }
+
+    public void generateWordCloud(Map<String, String> information) {
+        Map<String, Integer> wordCloud = WordCloud.generate(information);
         setChanged();
-        notifyObservers(wordCloud.generate(information));
+        notifyObservers(wordCloud);
     }
 
-    public void setPolitician(String politician) {
-        informationSource.startInformationCollection(politician);
-    }
-
-    @Override
-    public void update(Observable o, Object information) {
-        if(o instanceof InformationSource) {
-            this.generateWorldCloud((Map<String, String>) information);
-        }
+    public Set<String> getInformationSourcesNames() {
+        return informationSources.keySet();
     }
 }
