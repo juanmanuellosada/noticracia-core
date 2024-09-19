@@ -33,7 +33,7 @@ public class InformationSourceBroker {
     public boolean refreshInformation(Map<String, String> information) {
         if (!information.equals(lastSentInformation)) {
             lastSentInformation.putAll(information);
-            noticracia.generateWordCloud(information);
+            noticracia.generateWordCloud(lastSentInformation);
             return true;
         }
         return false;
