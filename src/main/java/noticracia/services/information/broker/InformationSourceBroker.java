@@ -40,7 +40,7 @@ public class InformationSourceBroker {
     }
 
     private boolean isNewInformation(Map<String, String> information) {
-        return !information.equals(lastSentInformation) || information.isEmpty();
+        return !information.equals(lastSentInformation) || !information.isEmpty();
     }
 
 }
