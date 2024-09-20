@@ -8,6 +8,7 @@ public class WordCloud {
     public static Map<String, Integer> generate(Map<String, String> information) {
         return information.values().stream()
                 .flatMap(text -> Arrays.stream(text.toLowerCase().split("\\W+")))
+                .filter((word) -> word.length() > 3)
                 .collect(Collectors.toMap(word -> word, word -> 1, Integer::sum));
     }
 }
