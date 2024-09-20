@@ -31,12 +31,16 @@ public class InformationSourceBroker {
     }
 
     public boolean refreshInformation(Map<String, String> information) {
-        if (!information.equals(lastSentInformation)) {
+        if (isNewInformation(information)) {
             lastSentInformation.putAll(information);
             noticracia.generateWordCloud(lastSentInformation);
             return true;
         }
         return false;
+    }
+
+    private boolean isNewInformation(Map<String, String> information) {
+        return !information.equals(lastSentInformation) || information.isEmpty();
     }
 
 }
