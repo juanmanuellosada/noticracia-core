@@ -4,8 +4,6 @@ import noticracia.entities.InformationSource;
 import noticracia.entities.InformationSourceNull;
 import noticracia.services.information.discovery.InformationSourceDiscoverer;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class InformationSourceFactory {
