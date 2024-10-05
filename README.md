@@ -8,16 +8,16 @@ classDiagram
         <<Observable>>
         -InformationSource informationSource
         +Noticracia(String path)
-        +selectSearchCriteria(String searchCriteria) void
+        +search(String searchCriteria) void
         +generateWordCloud(Map information) void
     }
     class InformationSource {
         <<interface>>
-        +startSearch(String searchCriteria) Map<String, String>
+        +search(String searchCriteria) Map<String, String>
         +getName() String
     }
     class InformationSourceNull {
-        +startSearch(String searchCriteria) Map<String, String>
+        +search(String searchCriteria) Map<String, String>
         +getName() String
     }
     class InformationSourceDiscoverer {
@@ -53,14 +53,14 @@ classDiagram
 
 ```mermaid
 sequenceDiagram
-    participant UI Proyect
+    participant ""
     participant Noticracia as Noticracia
     participant PathValidator as PathValidator
     participant InformationSourceFactory as InformationSourceFactory
     participant InformationSourceDiscoverer as InformationSourceDiscoverer
     participant InformationSource as InformationSource
-
-    UI Proyect->>Noticracia: new Noticracia(path)
+    
+    ""->>Noticracia: new Noticracia(path)
     activate Noticracia
     Noticracia->>PathValidator: validate(path)
     activate PathValidator
@@ -78,7 +78,7 @@ sequenceDiagram
     deactivate InformationSource
     InformationSourceFactory-->>Noticracia: return informationSource
     deactivate InformationSourceFactory
-    Noticracia-->>UI Proyect: Instancia lista
+    Noticracia-->>"": Instance ready
     deactivate Noticracia
 ```
 
@@ -86,14 +86,14 @@ sequenceDiagram
 ### Usenlo para el informe
 
 ```mermaid
-participant UI Proyect
+participant ""
 participant Noticracia as Noticracia
 participant PathValidator as PathValidator
 participant InformationSourceFactory as InformationSourceFactory
 participant InformationSourceDiscoverer as InformationSourceDiscoverer
 participant InformationSource as InformationSource
 
-UI Proyect->>Noticracia: new Noticracia(path)
+""->>Noticracia: new Noticracia(path)
 activate Noticracia
 Noticracia->>PathValidator: validate(path)
 activate PathValidator
@@ -111,7 +111,7 @@ InformationSource-->>InformationSourceFactory: return InformationSource instance
 deactivate InformationSource
 InformationSourceFactory-->>Noticracia: return informationSource
 deactivate InformationSourceFactory
-Noticracia-->>UI Proyect: Instancia lista
+Noticracia-->>"": Instance ready
 deactivate Noticracia
 ```
 
@@ -124,9 +124,9 @@ sequenceDiagram
     participant InformationSource as InformationSource
     participant WordCloudGenerator as WordCloudGenerator
 
-    UI Proyect->>Noticracia: selectSearchCriteria(criteria)
+    UI Proyect->>Noticracia: search(criteria)
     activate Noticracia
-    Noticracia->>InformationSource: startSearch(criteria)
+    Noticracia->>InformationSource: search(criteria)
     activate InformationSource
     InformationSource-->>Noticracia: return Map<String, String> results
     deactivate InformationSource
@@ -148,9 +148,9 @@ participant Noticracia as Noticracia
 participant InformationSource as InformationSource
 participant WordCloudGenerator as WordCloudGenerator
 
-UI Proyect->>Noticracia: selectSearchCriteria(criteria)
+UI Proyect->>Noticracia: search(criteria)
 activate Noticracia
-Noticracia->>InformationSource: startSearch(criteria)
+Noticracia->>InformationSource: search(criteria)
 activate InformationSource
 InformationSource-->>Noticracia: return Map<String, String> results
 deactivate InformationSource
