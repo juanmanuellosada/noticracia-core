@@ -18,8 +18,8 @@ public class Noticracia extends Observable {
         this.informationSource = informationSourceFactory.createInformationSource(path);
     }
 
-    public boolean selectSearchCriteria(String searchCriteria) {
-        return informationSource.startSearch(searchCriteria);
+    public void selectSearchCriteria(String searchCriteria) {
+        generateWordCloud(informationSource.startSearch(searchCriteria));
     }
 
     public void generateWordCloud(Map<String, String> information) {

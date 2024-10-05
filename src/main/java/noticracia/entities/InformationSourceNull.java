@@ -1,10 +1,12 @@
 package noticracia.entities;
 
+import java.util.Map;
+
 public class InformationSourceNull implements InformationSource {
 
     @Override
-    public boolean startSearch(String searchCriteria) {
-        return false;
+    public Map<String, String> startSearch(String searchCriteria) {
+        return null;
     }
 
     @Override
