@@ -3,7 +3,7 @@ package noticracia.services.worldCloud;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WordCloud {
+public class WordCloudGenerator {
 
     public static Map<String, Integer> generate(Map<String, String> information) {
         return information.values().stream()
