@@ -40,7 +40,12 @@ public class InformationSourceBroker {
     }
 
     private boolean isNewInformation(Map<String, String> information) {
-        return !information.isEmpty() && !information.equals(lastSentInformation);
+        return !information.isEmpty() && !isContained(information, lastSentInformation);
+    }
+
+    private boolean isContained(Map<String, String> information, Map<String, String> lastSentInformation) {
+        return information.entrySet().stream()
+                .allMatch(e -> e.getValue().equals(lastSentInformation.get(e.getKey())));
     }
 
 }
