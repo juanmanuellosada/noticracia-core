@@ -27,4 +27,8 @@ public class Noticracia extends Observable {
         setChanged();
         notifyObservers(wordCloud);
     }
+    
+    public String getInformationSourceName() {
+        return this.informationSource.getName();
+    }
 }
