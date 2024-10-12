@@ -1,0 +1,35 @@
+name: Deploy Javadocs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Configurar el repositorio y obtener el código
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Paso 2: Instalar sdkman y Java
+      - name: Install SDKMAN! and Java
+        run: |
+          curl -s "https://get.sdkman.io" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install java 22.0.1-open
+
+      # Paso 3: Construir los Javadocs
+      - name: Generate Javadocs
+        run: ./gradlew javadoc # O bien "mvn javadoc:javadoc" si usas Maven
+        env:
+          JAVA_HOME: $HOME/.sdkman/candidates/java/current
+
+      # Paso 4: Publicar los Javadocs en GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/docs/javadoc # Directorio donde se generan los Javadocs (puede variar)
