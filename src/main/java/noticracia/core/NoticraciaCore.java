@@ -2,10 +2,7 @@ package noticracia.core;
 
 import noticracia.entities.InformationSource;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class NoticraciaCore {
 
@@ -21,12 +18,41 @@ public class NoticraciaCore {
     }
 
     protected void startSearch(String informationSourceName, String searchCriteria) {
-        InformationSource informationSource = this.informationSources.get(informationSourceName);
-        if (isDifferentSource(informationSource)) {
-            Optional.ofNullable(currentInformationSource).ifPresent(InformationSource::stop);
-            currentInformationSource = informationSource;
-        }
+        validateInput(informationSourceName, searchCriteria);
+
+        InformationSource informationSource = getInformationSource(informationSourceName)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown information source: " + informationSourceName));
+
+        switchInformationSourceIfNeeded(informationSource);
+
         currentInformationSource.start(searchCriteria);
+    }
+
+    private void validateInput(String informationSourceName, String searchCriteria) {
+        if (informationSourceName == null || informationSourceName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Information source name cannot be null or empty.");
+        }
+        if (searchCriteria == null || searchCriteria.trim().isEmpty()) {
+            throw new IllegalArgumentException("Search criteria cannot be null or empty.");
+        }
+    }
+
+    private Optional<InformationSource> getInformationSource(String informationSourceName) {
+        return Optional.ofNullable(this.informationSources.get(informationSourceName));
+    }
+
+    private void switchInformationSourceIfNeeded(InformationSource newSource) {
+        if (isDifferentSource(newSource)) {
+            stopCurrentInformationSource();
+            currentInformationSource = newSource;
+        }
+    }
+
+    private void stopCurrentInformationSource() {
+        if (currentInformationSource != null) {
+            currentInformationSource.stop();
+            currentInformationSource = null;
+        }
     }
 
     public void refreshInformation(Map<String, String> information) {
@@ -48,6 +74,14 @@ public class NoticraciaCore {
     private boolean isContained(Map<String, String> information, Map<String, String> lastSentInformation) {
         return information.entrySet().stream()
                 .allMatch(e -> e.getValue().equals(lastSentInformation.get(e.getKey())));
+    }
+
+    public void addInformationSources(Map<String, InformationSource> newInformationSources) {
+        newInformationSources.forEach((name, informationSource) -> {
+            if (!informationSources.containsKey(name)) {
+                informationSources.put(name, informationSource);
+            }
+        });
     }
 
 }
