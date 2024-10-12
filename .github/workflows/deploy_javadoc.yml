@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - it-0
+      - it-1
 
 jobs:
   build:
