@@ -23,13 +23,17 @@ jobs:
           source "$HOME/.sdkman/bin/sdkman-init.sh"
           sdk install java 22.0.1-open
 
-      # Paso 3: Construir los Javadocs
+      # Paso 3: Dar permisos ejecutables a gradlew
+      - name: Grant execute permission for Gradlew
+        run: chmod +x ./gradlew
+
+      # Paso 4: Construir los Javadocs
       - name: Generate Javadocs
-        run: ./gradlew javadoc # O bien "mvn javadoc:javadoc" si usas Maven
+        run: ./gradlew javadoc
         env:
           JAVA_HOME: $HOME/.sdkman/candidates/java/current
 
-      # Paso 4: Publicar los Javadocs en GitHub Pages
+      # Paso 5: Publicar los Javadocs en GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
