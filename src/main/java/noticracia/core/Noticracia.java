@@ -1,40 +1,36 @@
 package noticracia.core;
 
-import noticracia.entities.InformationSource;
 import noticracia.services.information.factory.InformationSourceFactory;
-import noticracia.services.information.broker.InformationSourceBroker;
 import noticracia.services.validators.PathValidator;
-import noticracia.services.worldCloud.WordCloud;
+import noticracia.services.worldCloud.WordCloudGenerator;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Set;
 
 @SuppressWarnings("deprecation")
 public class Noticracia extends Observable {
 
-    private final Map<String, InformationSource> informationSources;
-    private final InformationSourceBroker informationSourceBroker;
+    private final NoticraciaCore noticraciaCore;
 
     public Noticracia(String path) {
         PathValidator.validate(path);
-        informationSourceBroker = new InformationSourceBroker(this);
         InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
-        this.informationSources = informationSourceFactory.createInformationSources(path, informationSourceBroker);
+        this.noticraciaCore = new NoticraciaCore(this, informationSourceFactory.createInformationSources(path));
     }
 
-
-
-    public boolean selectSearchCriteria(String informationSourceName, String searchCriteria) {
-        return informationSourceBroker
-                .startInformationCollection(this.informationSources.get(informationSourceName), searchCriteria);
+    public void startSearch(String informationSourceName, String searchCriteria) {
+        this.noticraciaCore
+                .startSearch(informationSourceName, searchCriteria);
     }
 
     public void generateWordCloud(Map<String, String> information) {
-        Map<String, Integer> wordCloud = WordCloud.generate(information);
+        Map<String, Integer> wordCloud = WordCloudGenerator.generate(information);
         setChanged();
         notifyObservers(wordCloud);
     }
 
     public Set<String> getInformationSourcesNames() {
-        return informationSources.keySet();
+        return this.noticraciaCore.informationSources.keySet();
     }
 }

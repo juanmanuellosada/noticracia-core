@@ -1,23 +1,25 @@
 package noticracia.entities;
 
-import noticracia.services.information.broker.InformationSourceBroker;
+import noticracia.core.NoticraciaCore;
 
 import java.util.Map;
 
 public abstract class InformationSource {
-    private final InformationSourceBroker informationSourceBroker;
+    private NoticraciaCore core;
 
-    public InformationSource(InformationSourceBroker informationSourceBroker) {
-        this.informationSourceBroker = informationSourceBroker;
+    public final void setCore(NoticraciaCore core) {
+        this.core = core;
     }
 
-    public abstract boolean startProcess(String searchCriteria);
+    public abstract void start(String searchCriteria);
 
-    public abstract void stopProcess();
+    public abstract void stop();
 
     public abstract String getName();
 
-    public final boolean refresh(Map<String, String> information) {
-        return informationSourceBroker.refreshInformation(information);
+    public final void notify(Map<String, String> information) {
+        this.core.refreshInformation(information);
     }
+
+    public abstract Map<String, String> mapInformation(Object result);
 }
