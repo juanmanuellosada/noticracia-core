@@ -10,15 +10,14 @@ import java.nio.file.*;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-
-@SuppressWarnings("deprecation")
 /**
- * La clase Noticracia se encarga de intermediar entre las diferentes fuentes de información
+ * La clase Noticracia se encarga de intermediar entre el NoticraciaCore y sus fuentes de información
  * y quien quiera usarlas, de gestionar las fuentes de información
  * y de generar nubes de palabras.
  *
  * @author Noticracia
  */
+@SuppressWarnings("deprecation")
 public class Noticracia extends Observable {
 
     /**
