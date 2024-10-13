@@ -36,6 +36,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/docs/javadoc # Directorio donde se generan los Javadocs
           publish_branch: gh-pages # Especifica la rama de despliegue
+          force_orphan: true # Fuerza el despliegue como una nueva versión sin mantener historial
