@@ -49,7 +49,10 @@ public class NoticraciaCore {
      * @param searchCriteria       El parámetro de búsqueda, en nuestro caso, el nombre del candidato político.
      */
     protected void startSearch(String informationSourceName, String searchCriteria) {
+
         validateInput(informationSourceName, searchCriteria);
+
+        lastSentInformation.clear();
 
         InformationSource informationSource = getInformationSource(informationSourceName)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown information source: " + informationSourceName));
