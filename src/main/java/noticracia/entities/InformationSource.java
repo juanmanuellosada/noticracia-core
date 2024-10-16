@@ -61,8 +61,9 @@ public abstract class InformationSource {
      * mapa de información donde la clave es el link de la información y el valor el
      * texto.
      *
-     * @param result el resultado de la búsqueda.
+     * @param result el resultado de la búsqueda,
+     * @param searchCriteria el parámetro de búsqueda.
      * @return el mapa de información.
      */
-    public abstract Map<String, String> mapInformation(Object result);
+    public abstract Map<String, String> mapInformation(Object result, String searchCriteria);
 }
