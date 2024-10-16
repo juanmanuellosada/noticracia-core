@@ -99,7 +99,7 @@ public class InformationSourceDiscoverer {
             }
         } catch (ClassNotFoundException e) {
             System.err.println("Failed to load class: " + className);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println("Failed to load class: " + className + " - " + e.getMessage());
         }
     }
