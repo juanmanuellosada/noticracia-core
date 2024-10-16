@@ -16,6 +16,7 @@ public abstract class InformationSource {
      * Referencia a la instancia de la clase NoticraciaCore que la esté usando.
      */
     private NoticraciaCore core;
+    private String searchCriteria;
 
     /**
      * Establece la instancia de la clase NoticraciaCore que la esté usando.
@@ -62,8 +63,15 @@ public abstract class InformationSource {
      * texto.
      *
      * @param result el resultado de la búsqueda,
-     * @param searchCriteria el parámetro de búsqueda.
      * @return el mapa de información.
      */
-    public abstract Map<String, String> mapInformation(Object result, String searchCriteria);
+    public abstract Map<String, String> mapInformation(Object result);
+
+    /**
+     * Obtiene el parámetro de búsqueda.
+     * @return El parámetro de búsqueda.
+     */
+    public final String getSearchCriteria() {
+        return searchCriteria;
+    }
 }
