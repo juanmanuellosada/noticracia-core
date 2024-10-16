@@ -19,7 +19,7 @@ public abstract class InformationSource {
     /**
      * Variable que almacena el parámetro de búsqueda.
      */
-    private String searchCriteria;
+    protected String searchCriteria;
 
     /**
      * Establece la instancia de la clase NoticraciaCore que la esté usando.
