@@ -135,7 +135,7 @@ public class NoticraciaCore {
      * @return True si hay información nueva.
      */
     private boolean isNewInformation(Map<String, String> information) {
-        return isContained(information, lastSentInformation);
+        return !isContained(information, lastSentInformation);
     }
 
     /**
