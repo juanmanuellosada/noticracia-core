@@ -86,6 +86,7 @@ public class Noticracia extends Observable {
      *
      * @param path el camino del directorio a monitorear.
      */
+    @SuppressWarnings("unchecked")
     private void watchDirectory(String path) {
         Path dir = Paths.get(path);
 
