@@ -116,6 +116,7 @@ public class Noticracia extends Observable {
                             Path filename = ev.context();
 
                             if (filename.toString().endsWith(".jar")) {
+                                Thread.sleep(1000);
                                 Path fullPath = dir.resolve(filename);
                                 Map<String, InformationSource> newSources = informationSourceFactory.createInformationSources(fullPath.toString());
                                 if (!newSources.isEmpty()) {
@@ -133,6 +134,8 @@ public class Noticracia extends Observable {
                     }
                 } catch (ClosedWatchServiceException cwse) {
                     System.out.println("Watch Service closed, " + cwse.getMessage());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             });
 
