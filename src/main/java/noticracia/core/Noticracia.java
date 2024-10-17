@@ -35,6 +35,8 @@ public class Noticracia extends Observable {
      */
     private final NoticraciaCore noticraciaCore;
 
+    private ScheduledExecutorService executor;
+
     /**
      * Inicializa la clase Noticracia.
      *
@@ -96,12 +98,9 @@ public class Noticracia extends Observable {
             System.err.println("Failed to watch directory: " + directoryPath);
             throw new RuntimeException(e);
         }
-
-
-        try (ScheduledExecutorService executor = Executors.newScheduledThreadPool(1)) {
-            Runnable task = getRunnable(directoryPath, watchService);
-            executor.scheduleAtFixedRate(task, 0, 500, TimeUnit.MILLISECONDS);
-        }
+        this.executor = Executors.newScheduledThreadPool(1);
+        Runnable task = getRunnable(directoryPath, watchService);
+        executor.scheduleAtFixedRate(task, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     /**
