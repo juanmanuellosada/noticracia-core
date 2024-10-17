@@ -116,6 +116,8 @@ public class Noticracia extends Observable {
                             if (filename.toString().endsWith(".jar")) {
                                 String fullPath = dir.resolve(filename).toString();
                                 addNewInformationSources(fullPath);
+                                setChanged();
+                                notifyObservers("Attemting to load new information sources...");
                             }
                         }
 
