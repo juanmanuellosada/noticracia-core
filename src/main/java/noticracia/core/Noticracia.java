@@ -14,6 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
+
 /**
  * La clase Noticracia se encarga de intermediar entre el NoticraciaCore y sus fuentes de información
  * y quien quiera usarlas, de gestionar las fuentes de información
@@ -34,8 +37,6 @@ public class Noticracia extends Observable {
      * información.
      */
     private final NoticraciaCore noticraciaCore;
-
-    private ScheduledExecutorService executor;
 
     /**
      * Inicializa la clase Noticracia.
@@ -81,58 +82,58 @@ public class Noticracia extends Observable {
     }
 
     /**
-     * Mantiene bajo observación el directorio especificado y cada vez que se
-     * crea un nuevo archivo en ese directorio, verifica si es un .jar y agrega las
-     * fuentes de información que tenga.
+     * Inicia el monitoreo del directorio para detectar la creación de nuevos archivos JAR.
      *
-     * @param directoryPath la ruta del directorio que se va a observar.
+     * @param path el camino del directorio a monitorear.
      */
-    public void watchDirectory(String directoryPath) {
-        Path path = Paths.get(directoryPath);
-        WatchService watchService = null;
+    private void watchDirectory(String path) {
+        Path dir = Paths.get(path);
 
         try {
-            watchService = FileSystems.getDefault().newWatchService();
-            path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
-        } catch (IOException e) {
-            System.err.println("Failed to watch directory: " + directoryPath);
-            throw new RuntimeException(e);
-        }
-        this.executor = Executors.newScheduledThreadPool(1);
-        Runnable task = getRunnable(directoryPath, watchService);
-        executor.scheduleAtFixedRate(task, 0, 500, TimeUnit.MILLISECONDS);
-    }
+            WatchService watcher = FileSystems.getDefault().newWatchService();
+            dir.register(watcher, ENTRY_CREATE);
 
-    /**
-     * Crea un hilo que se encarga de agregar las fuentes de información
-     * descubiertas en el directorio especificado a la lista de fuentes de información.
-     *
-     * @param directoryPath la ruta del directorio del cual crear las fuentes de información.
-     * @param watchService  el servicio de vigilancia.
-     * @return el hilo que se encarga de agregar las fuentes de información.
-     */
-    private Runnable getRunnable(String directoryPath, WatchService watchService) {
-        return () -> {
-            WatchKey key;
-            try {
-                key = watchService.take();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
+            Thread thread = new Thread(() -> {
+                try {
+                    while (true) {
+                        WatchKey key;
+                        try {
+                            key = watcher.take();
+                        } catch (InterruptedException x) {
+                            return;
+                        }
 
-            for (WatchEvent<?> event : key.pollEvents()) {
-                if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-                    if (event.context().toString().endsWith(".jar")) {
-                        addNewInformationSources(directoryPath + File.separator + event.context());
-                        setChanged();
-                        notifyObservers("New InformationSource detected");
+                        for (WatchEvent<?> event : key.pollEvents()) {
+                            WatchEvent.Kind<?> kind = event.kind();
+
+                            if (kind == OVERFLOW) {
+                                continue;
+                            }
+
+                            WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                            Path filename = ev.context();
+
+                            if (filename.toString().endsWith(".jar")) {
+                                String fullPath = dir.resolve(filename).toString();
+                                addNewInformationSources(fullPath);
+                            }
+                        }
+
+                        boolean valid = key.reset();
+                        if (!valid) {
+                            break;
+                        }
                     }
+                } catch (ClosedWatchServiceException cwse) {
+                    System.out.println("Watch Service closed, " + cwse.getMessage());
                 }
-            }
+            });
 
-            key.reset();
-        };
+            thread.setDaemon(true);
+            thread.start();
+        } catch (IOException ioe) {
+            System.err.println("Error setting up file watcher: " + ioe.getMessage());
+        }
     }
 
     /**
