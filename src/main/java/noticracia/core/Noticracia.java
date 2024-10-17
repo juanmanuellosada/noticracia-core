@@ -1,5 +1,6 @@
 package noticracia.core;
 
+import noticracia.entities.InformationSource;
 import noticracia.services.information.factory.InformationSourceFactory;
 import noticracia.services.validators.PathValidator;
 import noticracia.services.worldCloud.WordCloudGenerator;
@@ -115,10 +116,13 @@ public class Noticracia extends Observable {
                             Path filename = ev.context();
 
                             if (filename.toString().endsWith(".jar")) {
-                                String fullPath = dir.resolve(filename).toString();
-                                addNewInformationSources(fullPath);
-                                setChanged();
-                                notifyObservers("Attemting to load new information sources...");
+                                Path fullPath = dir.resolve(filename);
+                                Map<String, InformationSource> newSources = informationSourceFactory.createInformationSources(fullPath.toString());
+                                if (!newSources.isEmpty()) {
+                                    noticraciaCore.addInformationSources(newSources);
+                                    setChanged();
+                                    notifyObservers(newSources);
+                                }
                             }
                         }
 
