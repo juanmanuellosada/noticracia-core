@@ -10,6 +10,10 @@ import java.nio.file.*;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /**
  * La clase Noticracia se encarga de intermediar entre el NoticraciaCore y sus fuentes de información
  * y quien quiera usarlas, de gestionar las fuentes de información
@@ -40,6 +44,7 @@ public class Noticracia extends Observable {
     public Noticracia(String path) {
         PathValidator.validate(path);
         this.noticraciaCore = new NoticraciaCore(this, informationSourceFactory.createInformationSources(path));
+        watchDirectory(path);
     }
 
     /**
@@ -79,15 +84,36 @@ public class Noticracia extends Observable {
      * fuentes de información que tenga.
      *
      * @param directoryPath la ruta del directorio que se va a observar.
-     * @throws IOException si ocurre un error al intentar observar el directorio.
      */
-    public void watchDirectory(String directoryPath) throws IOException {
+    public void watchDirectory(String directoryPath) {
         Path path = Paths.get(directoryPath);
-        WatchService watchService = FileSystems.getDefault().newWatchService();
+        WatchService watchService = null;
 
-        path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+        try {
+            watchService = FileSystems.getDefault().newWatchService();
+            path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+        } catch (IOException e) {
+            System.err.println("Failed to watch directory: " + directoryPath);
+            throw new RuntimeException(e);
+        }
 
-        while (true) {
+
+        try (ScheduledExecutorService executor = Executors.newScheduledThreadPool(1)) {
+            Runnable task = getRunnable(directoryPath, watchService);
+            executor.scheduleAtFixedRate(task, 0, 500, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    /**
+     * Crea un hilo que se encarga de agregar las fuentes de información
+     * descubiertas en el directorio especificado a la lista de fuentes de información.
+     *
+     * @param directoryPath la ruta del directorio del cual crear las fuentes de información.
+     * @param watchService  el servicio de vigilancia.
+     * @return el hilo que se encarga de agregar las fuentes de información.
+     */
+    private Runnable getRunnable(String directoryPath, WatchService watchService) {
+        return () -> {
             WatchKey key;
             try {
                 key = watchService.take();
@@ -107,7 +133,7 @@ public class Noticracia extends Observable {
             }
 
             key.reset();
-        }
+        };
     }
 
     /**
