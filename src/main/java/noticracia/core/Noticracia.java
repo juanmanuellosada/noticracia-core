@@ -100,6 +100,8 @@ public class Noticracia extends Observable {
                 if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
                     if (event.context().toString().endsWith(".jar")) {
                         addNewInformationSources(directoryPath + File.separator + event.context());
+                        setChanged();
+                        notifyObservers("New InformationSource detected");
                     }
                 }
             }
