@@ -1,0 +1,7 @@
+noticracia.core
+noticracia.entities
+noticracia.services.information.discovery
+noticracia.services.information.factory
+noticracia.services.validators
+noticracia.services.watcher
+noticracia.services.worldCloud

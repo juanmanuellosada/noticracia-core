@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"noticracia.core"},{"l":"noticracia.entities"},{"l":"noticracia.services.information.discovery"},{"l":"noticracia.services.information.factory"},{"l":"noticracia.services.validators"},{"l":"noticracia.services.watcher"},{"l":"noticracia.services.worldCloud"}];updateSearchResults();
