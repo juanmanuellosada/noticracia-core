@@ -118,7 +118,7 @@ public class Noticracia extends Observable {
                             if (filename.toString().endsWith(".jar")) {
                                 Thread.sleep(1000);
                                 Path fullPath = dir.resolve(filename);
-                                Map<String, InformationSource> newSources = informationSourceFactory.createInformationSources(fullPath.toString());
+                                Map<String, InformationSource> newSources = informationSourceFactory.createInformationSources(path);
                                 if (!newSources.isEmpty()) {
                                     noticraciaCore.addInformationSources(newSources);
                                     setChanged();
