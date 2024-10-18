@@ -91,6 +91,11 @@ public class Noticracia extends Observable {
      */
     public void addNewInformationSources(Map<String, InformationSource> newInformationSources) {
         noticraciaCore.addInformationSources(newInformationSources);
+
+        newInformationSources.forEach((name, informationSource) -> {
+            informationSource.setCore(this.noticraciaCore);
+        });
+        
         setChanged();
         notifyObservers("Attemting to load new information sources...");
     }
