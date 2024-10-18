@@ -122,7 +122,7 @@ public class Noticracia extends Observable {
                                 if (!newSources.isEmpty()) {
                                     noticraciaCore.addInformationSources(newSources);
                                     setChanged();
-                                    notifyObservers(newSources);
+                                    notifyObservers("Attemting to load new information sources...");
                                 }
                             }
                         }
