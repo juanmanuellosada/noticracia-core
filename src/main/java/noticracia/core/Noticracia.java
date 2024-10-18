@@ -3,6 +3,7 @@ package noticracia.core;
 import noticracia.entities.InformationSource;
 import noticracia.services.information.factory.InformationSourceFactory;
 import noticracia.services.validators.PathValidator;
+import noticracia.services.watcher.PathWatcher;
 import noticracia.services.worldCloud.WordCloudGenerator;
 
 import java.io.File;
@@ -48,7 +49,7 @@ public class Noticracia extends Observable {
     public Noticracia(String path) {
         PathValidator.validate(path);
         this.noticraciaCore = new NoticraciaCore(this, informationSourceFactory.createInformationSources(path));
-        watchDirectory(path);
+        new PathWatcher(this).watchPath(path);
     }
 
     /**
@@ -83,76 +84,14 @@ public class Noticracia extends Observable {
     }
 
     /**
-     * Inicia el monitoreo del directorio para detectar la creación de nuevos archivos JAR.
-     *
-     * @param path el camino del directorio a monitorear.
-     */
-    @SuppressWarnings("unchecked")
-    private void watchDirectory(String path) {
-        Path dir = Paths.get(path);
-
-        try {
-            WatchService watcher = FileSystems.getDefault().newWatchService();
-            dir.register(watcher, ENTRY_CREATE);
-
-            Thread thread = new Thread(() -> {
-                try {
-                    while (true) {
-                        WatchKey key;
-                        try {
-                            key = watcher.take();
-                        } catch (InterruptedException x) {
-                            return;
-                        }
-
-                        for (WatchEvent<?> event : key.pollEvents()) {
-                            WatchEvent.Kind<?> kind = event.kind();
-
-                            if (kind == OVERFLOW) {
-                                continue;
-                            }
-
-                            WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                            Path filename = ev.context();
-
-                            if (filename.toString().endsWith(".jar")) {
-                                Thread.sleep(1000);
-                                Path fullPath = dir.resolve(filename);
-                                Map<String, InformationSource> newSources = informationSourceFactory.createInformationSources(path);
-                                if (!newSources.isEmpty()) {
-                                    noticraciaCore.addInformationSources(newSources);
-                                    setChanged();
-                                    notifyObservers("Attemting to load new information sources...");
-                                }
-                            }
-                        }
-
-                        boolean valid = key.reset();
-                        if (!valid) {
-                            break;
-                        }
-                    }
-                } catch (ClosedWatchServiceException cwse) {
-                    System.out.println("Watch Service closed, " + cwse.getMessage());
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            thread.setDaemon(true);
-            thread.start();
-        } catch (IOException ioe) {
-            System.err.println("Error setting up file watcher: " + ioe.getMessage());
-        }
-    }
-
-    /**
      * Agrega las fuentes de información nuevas descubiertas en el directorio
      * especificado a la lista de fuentes de información.
      *
-     * @param newDirectoryPath la ruta del directorio del cual crear las fuentes de información.
+     * @param newInformationSources el nuevo conjunto de fuentes de información.
      */
-    private void addNewInformationSources(String newDirectoryPath) {
-        noticraciaCore.addInformationSources(informationSourceFactory.createInformationSources(newDirectoryPath));
+    public void addNewInformationSources(Map<String, InformationSource> newInformationSources) {
+        noticraciaCore.addInformationSources(newInformationSources);
+        setChanged();
+        notifyObservers("Attemting to load new information sources...");
     }
 }
