@@ -37,7 +37,7 @@ public class PathWatcher {
 
     private WatchService setupWatchService(Path dir) throws IOException {
         WatchService watcher = FileSystems.getDefault().newWatchService();
-        dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
+        dir.register(watcher, ENTRY_CREATE);
         return watcher;
     }
 
