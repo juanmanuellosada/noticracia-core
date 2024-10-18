@@ -6,18 +6,9 @@ import noticracia.services.validators.PathValidator;
 import noticracia.services.watcher.PathWatcher;
 import noticracia.services.worldCloud.WordCloudGenerator;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 /**
  * La clase Noticracia se encarga de intermediar entre el NoticraciaCore y sus fuentes de información
@@ -95,7 +86,7 @@ public class Noticracia extends Observable {
         newInformationSources.forEach((name, informationSource) -> {
             informationSource.setCore(this.noticraciaCore);
         });
-        
+
         setChanged();
         notifyObservers("Attemting to load new information sources...");
     }
