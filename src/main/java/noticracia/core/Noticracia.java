@@ -21,11 +21,6 @@ import java.util.Set;
 public class Noticracia extends Observable {
 
     /**
-     * La fábrica de fuentes de información.
-     */
-    private final InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
-
-    /**
      * El núcleo de la aplicación que se encarga de gestionar las fuentes de
      * información.
      */
@@ -39,7 +34,10 @@ public class Noticracia extends Observable {
      */
     public Noticracia(String path) {
         PathValidator.validate(path);
-        this.noticraciaCore = new NoticraciaCore(this, informationSourceFactory.createInformationSources(path));
+        /**
+         * La fábrica de fuentes de información.
+         */
+        this.noticraciaCore = new NoticraciaCore(this, new InformationSourceFactory().createInformationSources(path));
         new PathWatcher(this).watchPath(path);
     }
 
