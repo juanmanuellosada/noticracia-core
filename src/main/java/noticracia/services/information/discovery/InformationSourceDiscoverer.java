@@ -1,6 +1,7 @@
 package noticracia.services.information.discovery;
 
 import noticracia.entities.InformationSource;
+import noticracia.entities.InformationSourceNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,63 +9,70 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class InformationSourceDiscoverer {
-    private final Set<Class<? extends InformationSource>> classes = new HashSet<>();
 
-    public Set<Class<? extends InformationSource>> discover(String directoryPath) {
-        File[] files = loadJarFiles(directoryPath);
-
-        for (File file : files) {
-            processJarFile(file);
+    public Class<? extends InformationSource> discover(String directoryPath) {
+        File[] jarFiles = loadJarFiles(directoryPath);
+        for (File jarFile : jarFiles) {
+            Optional<Class<? extends InformationSource>> discoveredClass = processJarFile(jarFile);
+            if (discoveredClass.isPresent()) {
+                return discoveredClass.get();
+            }
         }
-        return new HashSet<>(this.classes);
+        return InformationSourceNull.class;
     }
 
     private File[] loadJarFiles(String directoryPath) {
         File dir = new File(directoryPath);
-        return dir.listFiles((d, name) -> name.endsWith(".jar"));
+        File[] jarFiles = dir.listFiles((d, name) -> name.endsWith(".jar"));
+        return jarFiles != null ? jarFiles : new File[0];
     }
 
     @SuppressWarnings("deprecation")
-    private void processJarFile(File file) {
-        try (JarFile jarFile = new JarFile(file)) {
-            URL[] urls = { new URL("jar:file:" + file.getAbsolutePath() + "!/") };
-            try (URLClassLoader cl = URLClassLoader.newInstance(urls)) {
-                processEntries(jarFile, cl);
+    private Optional<Class<? extends InformationSource>> processJarFile(File jarFile) {
+        try (JarFile jar = new JarFile(jarFile)) {
+            URL[] urls = {new URL("jar:file:" + jarFile.getAbsolutePath() + "!/")};
+            try (URLClassLoader classLoader = URLClassLoader.newInstance(urls)) {
+                return processEntries(jar, classLoader);
             }
         } catch (MalformedURLException e) {
-            System.err.println("Malformed URL Exception for file: " + file.getAbsolutePath() + " - " + e.getMessage());
+            System.err.println("Malformed URL Exception for file: {}" + jarFile.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("IO Exception reading JAR file: " + file.getAbsolutePath() + " - " + e.getMessage());
+            System.err.println("IO Exception reading JAR file: {}" + jarFile.getAbsolutePath());
         }
+        return Optional.empty();
     }
 
-    private void processEntries(JarFile jarFile, URLClassLoader cl) {
+    private Optional<Class<? extends InformationSource>> processEntries(JarFile jarFile, URLClassLoader classLoader) {
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             if (entry.getName().endsWith(".class") && !entry.isDirectory()) {
                 String className = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
-                loadClass(className, cl);
+                Optional<Class<? extends InformationSource>> cls = loadClass(className, classLoader);
+                if (cls.isPresent()) {
+                    return cls;
+                }
             }
         }
+        return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
-    private void loadClass(String className, URLClassLoader cl) {
+    private Optional<Class<? extends InformationSource>> loadClass(String className, URLClassLoader classLoader) {
         try {
-            Class<?> cls = cl.loadClass(className);
+            Class<?> cls = classLoader.loadClass(className);
             if (InformationSource.class.isAssignableFrom(cls) && !cls.isInterface()) {
-                this.classes.add((Class<? extends InformationSource>) cls);
+                return Optional.of((Class<? extends InformationSource>) cls);
             }
         } catch (ClassNotFoundException e) {
-            System.err.println("Failed to load class: " + className);
+            System.err.println("Failed to load class: {}" + className);
         }
+        return Optional.empty();
     }
 }
 
