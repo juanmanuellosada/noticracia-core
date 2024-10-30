@@ -23,7 +23,7 @@ public class NoticraciaCore {
         }
 
         try {
-            return informationSourceClass.getConstructor(String.class).newInstance(path);
+            return informationSourceClass.getConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             System.err.println("Error instantiating information source: " + informationSourceClass.getName());
             return new InformationSourceNull();
