@@ -8,22 +8,20 @@ import java.util.*;
 public class Noticracia extends Observable {
 
     private final NoticraciaCore noticraciaCore;
+    private final WordCloudGenerator wordCloudGenerator;
 
-    public Noticracia(String path) {
-        noticraciaCore = new NoticraciaCore(path);
+    public Noticracia(NoticraciaCore noticraciaCore) {
+        this.noticraciaCore = noticraciaCore;
+        wordCloudGenerator = new WordCloudGenerator();
     }
 
-    public void search(String searchCriteria) {
-        generateWordCloud(noticraciaCore.informationSource.getInformation(searchCriteria));
-    }
+    public boolean search(String searchCriteria) {
+        Map<String, String> information = noticraciaCore.informationSources.values().
+                iterator().next().getInformation(searchCriteria);
 
-    public void generateWordCloud(Map<String, String> information) {
-        Map<String, Integer> wordCloud = WordCloudGenerator.generate(information);
-        setChanged();
-        notifyObservers(wordCloud);
-    }
-    
-    public String getInformationSourceName() {
-        return noticraciaCore.informationSource.getName();
+        if (information.isEmpty()) return false;
+
+        notifyObservers(wordCloudGenerator.generate(information));
+        return true;
     }
 }

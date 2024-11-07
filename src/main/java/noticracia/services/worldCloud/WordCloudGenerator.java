@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class WordCloudGenerator {
 
-    public static Map<String, Integer> generate(Map<String, String> information) {
+    public Map<String, Integer> generate(Map<String, String> information) {
         return information.values().stream()
                 .flatMap(text -> Arrays.stream(text.toLowerCase().split("[ .,;\\n\"'“”‘’]+")))
                 .filter((word) -> word.length() > 3)
