@@ -3,6 +3,7 @@ package noticracia.services.factories;
 import noticracia.core.Noticracia;
 import noticracia.core.NoticraciaCore;
 import noticracia.entities.InformationSource;
+import noticracia.services.information.discovery.InformationSourceDiscoverer;
 import noticracia.services.validators.PathValidator;
 
 import java.util.Map;
@@ -13,7 +14,8 @@ public class NoticraciaFactory {
 
     public Noticracia createNoticracia(String path) {
         PathValidator.validate(path);
-        Map<String, InformationSource> sourcesMap = new InformationSourceFactory().createInformationSources(path).stream()
+        Map<String, InformationSource> sourcesMap = new InformationSourceFactory().
+                createInformationSources(new InformationSourceDiscoverer().discover(path)).stream()
                 .collect(Collectors.toMap(InformationSource::getName, Function.identity()));
 
         if (sourcesMap.isEmpty()) {

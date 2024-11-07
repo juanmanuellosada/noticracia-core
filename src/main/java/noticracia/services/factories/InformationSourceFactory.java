@@ -1,18 +1,14 @@
 package noticracia.services.factories;
 
 import noticracia.entities.InformationSource;
-import noticracia.services.information.discovery.InformationSourceDiscoverer;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class InformationSourceFactory {
 
-    private final InformationSourceDiscoverer discoverer = new InformationSourceDiscoverer();
-
-    public Set<InformationSource> createInformationSources(String path) {
+    public Set<InformationSource> createInformationSources(Set<Class<? extends InformationSource>> classes) {
         Set<InformationSource> sources = new HashSet<>();
-        Set<Class<? extends InformationSource>> classes = discoverer.discover(path);
 
         for (Class<? extends InformationSource> cls : classes) {
             try {
