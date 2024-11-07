@@ -7,7 +7,7 @@ import java.util.*;
 @SuppressWarnings("deprecation")
 public class Noticracia extends Observable {
 
-    private final NoticraciaCore noticraciaCore;
+    public final NoticraciaCore noticraciaCore;
     private final WordCloudGenerator wordCloudGenerator;
 
     public Noticracia(NoticraciaCore noticraciaCore) {
