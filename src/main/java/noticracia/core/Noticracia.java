@@ -21,6 +21,7 @@ public class Noticracia extends Observable {
 
         if (information.isEmpty()) return false;
 
+        setChanged();
         notifyObservers(wordCloudGenerator.generate(information));
         return true;
     }
