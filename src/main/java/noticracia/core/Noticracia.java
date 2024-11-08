@@ -16,7 +16,7 @@ public class Noticracia extends Observable {
     }
 
     public boolean search(String searchCriteria) {
-        Map<String, String> information = noticraciaCore.informationSources.values().
+        Set<String> information = noticraciaCore.informationSources.values().
                 iterator().next().getInformation(searchCriteria);
 
         if (information.isEmpty()) return false;
