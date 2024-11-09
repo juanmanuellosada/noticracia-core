@@ -1,7 +1,7 @@
 package noticracia.configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
@@ -9,8 +9,11 @@ public class ConfigLoader {
 
     public ConfigLoader() {
         properties = new Properties();
-        try {
-            properties.load(new FileInputStream("src/main/resources/config.properties"));
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                throw new RuntimeException("config.properties not found in classpath");
+            }
+            properties.load(input);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
