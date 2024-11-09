@@ -1,5 +1,6 @@
 package noticracia.core;
 
+import noticracia.configuration.ConfigLoader;
 import noticracia.entities.InformationSource;
 import noticracia.entities.WordCloud;
 
@@ -14,13 +15,17 @@ public class Noticracia {
         this.informationSources = informationSources;
     }
 
-    public WordCloud generateWordCloud(String searchCriteria) {
+    public WordCloud generateWordCloud(String politicalCandidate) {
 
         Set<String> information = this.informationSources.values()
                 .stream()
-                .flatMap(source -> source.getInformation(searchCriteria).stream())
+                .flatMap(source -> source.getInformation(politicalCandidate).stream())
                 .collect(Collectors.toSet());
 
         return new WordCloud(information);
+    }
+
+    public String[] getPoliticalCandidates() {
+        return new ConfigLoader().getPoliticalCandidatesNames();
     }
 }
