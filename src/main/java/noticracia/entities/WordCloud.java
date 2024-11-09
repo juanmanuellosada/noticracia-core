@@ -1,15 +1,21 @@
-package noticracia.services.worldCloud;
+package noticracia.entities;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WordCloudGenerator {
+public class WordCloud {
 
-    public Map<String, Integer> generate(Set<String> information) {
-        return information.stream()
+    private final Map<String, Integer> wordCloud;
+
+    public WordCloud(Set<String> information) {
+        this.wordCloud = information.stream()
                 .flatMap(text -> Arrays.stream(text.toLowerCase().split("[ .,;\\n\"'“”‘’]+")))
                 .filter(word -> word.length() > 3)
                 .collect(Collectors.toMap(word -> word, word -> 1, Integer::sum));
+    }
+
+    public Map<String, Integer> getWordCloud() {
+        return wordCloud;
     }
 
 }

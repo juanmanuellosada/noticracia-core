@@ -1,28 +1,26 @@
 package noticracia.core;
 
-import noticracia.services.worldCloud.WordCloudGenerator;
+import noticracia.entities.InformationSource;
+import noticracia.entities.WordCloud;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("deprecation")
-public class Noticracia extends Observable {
+public class Noticracia {
 
-    public final NoticraciaCore noticraciaCore;
-    private final WordCloudGenerator wordCloudGenerator;
+    public Map<String, InformationSource> informationSources;
 
-    public Noticracia(NoticraciaCore noticraciaCore) {
-        this.noticraciaCore = noticraciaCore;
-        wordCloudGenerator = new WordCloudGenerator();
+    public Noticracia(Map<String, InformationSource> informationSources) {
+        this.informationSources = informationSources;
     }
 
-    public boolean search(String searchCriteria) {
-        Set<String> information = noticraciaCore.informationSources.values().
-                iterator().next().getInformation(searchCriteria);
+    public WordCloud generateWordCloud(String searchCriteria) {
 
-        if (information.isEmpty()) return false;
+        Set<String> information = this.informationSources.values()
+                .stream()
+                .flatMap(source -> source.getInformation(searchCriteria).stream())
+                .collect(Collectors.toSet());
 
-        setChanged();
-        notifyObservers(wordCloudGenerator.generate(information));
-        return true;
+        return new WordCloud(information);
     }
 }
