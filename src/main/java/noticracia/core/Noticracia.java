@@ -25,7 +25,7 @@ public class Noticracia {
         return new WordCloud(information);
     }
 
-    public String[] getPoliticalCandidates() {
+    public String[] getPoliticalCandidatesNames() {
         return new ConfigLoader().getPoliticalCandidatesNames();
     }
 }

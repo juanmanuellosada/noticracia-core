@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface InformationSource {
 
-    public Set<String> getInformation(String searchCriteria);
+    public Set<String> getInformation(String politicalCandidate);
 
     public String getName();
 }
