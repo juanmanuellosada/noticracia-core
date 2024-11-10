@@ -2,23 +2,23 @@ package noticracia.services.factories;
 
 import noticracia.entities.InformationSource;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class InformationSourceFactory {
 
     public Set<InformationSource> createInformationSources(Set<Class<? extends InformationSource>> classes) {
-        Set<InformationSource> sources = new HashSet<>();
+        return classes.stream()
+                .map(this::instantiateSource)
+                .collect(Collectors.toSet());
+    }
 
-        for (Class<? extends InformationSource> cls : classes) {
-            try {
-                InformationSource source = cls.getDeclaredConstructor().newInstance();
-                sources.add(source);
-            } catch (Exception e) {
-                System.err.println("Error instantiating InformationSource from class " + cls.getName() + ": " + e.getMessage());
-            }
+    private InformationSource instantiateSource(Class<? extends InformationSource> cls) {
+        try {
+            return cls.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Error instantiating InformationSource: " + cls.getName(), e);
         }
-        return sources;
     }
 
 }

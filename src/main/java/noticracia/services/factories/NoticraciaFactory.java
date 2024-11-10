@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class NoticraciaFactory {
 
     public Noticracia createNoticracia(String path) {
-        PathValidator.validate(path);
+        new PathValidator().validate(path);
         Map<String, InformationSource> sourcesMap = new InformationSourceFactory().
                 createInformationSources(new InformationSourceDiscoverer().discover(path)).stream()
                 .collect(Collectors.toMap(InformationSource::getName, Function.identity()));

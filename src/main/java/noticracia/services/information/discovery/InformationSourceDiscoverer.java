@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -28,8 +26,11 @@ public class InformationSourceDiscoverer {
     }
 
     private File[] loadJarFiles(String directoryPath) {
-        File dir = new File(directoryPath);
-        return dir.listFiles((d, name) -> name.endsWith(".jar"));
+        return Optional.ofNullable(new File(directoryPath).listFiles())
+                .map(files -> Arrays.stream(files)
+                        .filter(file -> file.getName().endsWith(".jar"))
+                        .toArray(File[]::new))
+                .orElse(new File[0]);
     }
 
     @SuppressWarnings("deprecation")
@@ -47,14 +48,10 @@ public class InformationSourceDiscoverer {
     }
 
     private void processEntries(JarFile jarFile, URLClassLoader cl) {
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            if (entry.getName().endsWith(".class") && !entry.isDirectory()) {
-                String className = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
-                loadClass(className, cl);
-            }
-        }
+        jarFile.stream()
+                .filter(entry -> entry.getName().endsWith(".class") && !entry.isDirectory())
+                .map(entry -> entry.getName().replace('/', '.').replace(".class", ""))
+                .forEach(className -> loadClass(className, cl));
     }
 
     @SuppressWarnings("unchecked")
