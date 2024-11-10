@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class WordCloud {
 
-    private static Map<String, Integer> wordCloud;
+    private final Map<String, Integer> wordCloud;
 
     public WordCloud(Set<String> information) {
         wordCloud = information.stream()
