@@ -1,91 +1,74 @@
 package noticracia.core;
 
-import noticracia.entities.InformationSource;
-import noticracia.services.information.factory.InformationSourceFactory;
-import noticracia.services.validators.PathValidator;
-import noticracia.services.watcher.PathWatcher;
-import noticracia.services.worldCloud.WordCloudGenerator;
+import noticracia.entities.WordCloud;
+import noticracia.services.updates.UpdateScheduler;
 
-import java.util.Map;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * La clase Noticracia se encarga de intermediar entre el NoticraciaCore y sus fuentes de información
- * y quien quiera usarlas, de gestionar las fuentes de información
- * y de generar nubes de palabras.
- *
- * @author Noticracia
- */
 @SuppressWarnings("deprecation")
 public class Noticracia extends Observable {
 
-    /**
-     * El núcleo de la aplicación que se encarga de gestionar las fuentes de
-     * información.
-     */
-    private final NoticraciaCore noticraciaCore;
+    public final NoticraciaCore noticraciaCore;
+    private final Set<String> processedInformation;
+    private UpdateScheduler updateScheduler;
+    private WordCloud currentWordCloud;
 
-    /**
-     * Inicializa la clase Noticracia.
-     *
-     * @param path la ruta del directorio donde se encuentran las diferentes fuentes de
-     *             información.
-     */
-    public Noticracia(String path) {
-        PathValidator.validate(path);
-        /**
-         * La fábrica de fuentes de información.
-         */
-        this.noticraciaCore = new NoticraciaCore(this, new InformationSourceFactory().createInformationSources(path));
-        new PathWatcher(this).watchPath(path);
+    public Noticracia(NoticraciaCore noticraciaCore) {
+        this.noticraciaCore = noticraciaCore;
+        this.processedInformation = new HashSet<>();
     }
 
-    /**
-     * Inicia una búsqueda en una fuente de información en particular.
-     *
-     * @param informationSourceName el nombre de la fuente de información.
-     * @param searchCriteria       El parámetro de búsqueda, en nuestro caso, el nombre del candidato político.
-     */
-    public void startSearch(String informationSourceName, String searchCriteria) {
-        this.noticraciaCore
-                .startSearch(informationSourceName, searchCriteria);
+    public WordCloud generateWordCloud(String politicalCandidate, String informationSourceName) {
+        Set<String> newInformation = noticraciaCore.getInformation(politicalCandidate, informationSourceName);
+        Set<String> unprocessedInformation = filterUnprocessedInformation(newInformation);
+
+        if (!unprocessedInformation.isEmpty()) {
+            currentWordCloud = new WordCloud(unprocessedInformation);
+            processedInformation.addAll(unprocessedInformation);
+            setChanged();
+            notifyObservers(currentWordCloud);
+        }
+
+        return currentWordCloud;
     }
 
-    /**
-     * Genera una nube de palabras a partir de un mapa de información.
-     *
-     * @param information el mapa de información.
-     */
-    public void generateWordCloud(Map<String, String> information) {
-        Map<String, Integer> wordCloud = WordCloudGenerator.generate(information);
-        setChanged();
-        notifyObservers(wordCloud);
+    public WordCloud generateAndStartUpdating(String politicalCandidate, String informationSourceName, long interval) {
+        WordCloud wordCloud = generateWordCloud(politicalCandidate, informationSourceName);
+        startUpdating(politicalCandidate, informationSourceName, interval);
+        return wordCloud;
     }
 
-    /**
-     * Obtiene los nombres de las diferentes fuentes de información actuales.
-     *
-     * @return el conjunto de nombres de las diferentes fuentes de información actuales.
-     */
-    public Set<String> getInformationSourcesNames() {
-        return this.noticraciaCore.informationSources.keySet();
+    public void startUpdating(String politicalCandidate, String informationSourceName, long interval) {
+        stopUpdating();
+        updateScheduler = new UpdateScheduler(this, politicalCandidate, informationSourceName, interval);
+        updateScheduler.start();
     }
 
-    /**
-     * Agrega las fuentes de información nuevas descubiertas en el directorio
-     * especificado a la lista de fuentes de información.
-     *
-     * @param newInformationSources el nuevo conjunto de fuentes de información.
-     */
-    public void addNewInformationSources(Map<String, InformationSource> newInformationSources) {
-        noticraciaCore.addInformationSources(newInformationSources);
+    public void stopUpdating() {
+        if (updateScheduler != null) {
+            updateScheduler.stop();
+            updateScheduler = null;
+            processedInformation.clear();
+            currentWordCloud = null;
+        }
+    }
 
-        newInformationSources.forEach((name, informationSource) -> {
-            informationSource.setCore(this.noticraciaCore);
-        });
+    public void updateObservers(String politicalCandidate, String informationSourceName) {
+        Set<String> newInformation = noticraciaCore.getInformation(politicalCandidate, informationSourceName);
+        Set<String> unprocessedInformation = filterUnprocessedInformation(newInformation);
 
-        setChanged();
-        notifyObservers("Attemting to load new information sources...");
+        if (!unprocessedInformation.isEmpty()) {
+            currentWordCloud = new WordCloud(unprocessedInformation);
+            processedInformation.addAll(unprocessedInformation);
+            setChanged();
+            notifyObservers(currentWordCloud);
+        }
+    }
+
+    private Set<String> filterUnprocessedInformation(Set<String> information) {
+        return information.stream()
+                .filter(data -> !processedInformation.contains(data))
+                .collect(Collectors.toSet());
     }
 }

@@ -2,31 +2,19 @@ package noticracia.services.watcher;
 
 import noticracia.core.Noticracia;
 import noticracia.entities.InformationSource;
-import noticracia.services.information.factory.InformationSourceFactory;
+import noticracia.services.information.factories.InformationSourceFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
 public class PathWatcher {
-
-
-    private final Noticracia noticracia;
     private final InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
 
-
-    public PathWatcher(Noticracia noticracia) {
-        this.noticracia = noticracia;
-    }
-    /**
-     * Inicia el monitoreo del directorio para detectar la creación de nuevos archivos JAR.
-     *
-     * @param path el camino del directorio a monitorear.
-     */
-    @SuppressWarnings("unchecked")
-    public void watchPath(String path) {
+    public void watchPath(String path, Consumer<Map<String, InformationSource>> onNewSourcesDetected) {
         Path dir = Paths.get(path);
 
         try {
@@ -36,12 +24,7 @@ public class PathWatcher {
             Thread thread = new Thread(() -> {
                 try {
                     while (true) {
-                        WatchKey key;
-                        try {
-                            key = watcher.take();
-                        } catch (InterruptedException x) {
-                            return;
-                        }
+                        WatchKey key = watcher.take();
 
                         for (WatchEvent<?> event : key.pollEvents()) {
                             WatchEvent.Kind<?> kind = event.kind();
@@ -54,12 +37,10 @@ public class PathWatcher {
                             Path filename = ev.context();
 
                             if (filename.toString().endsWith(".jar")) {
-                                Thread.sleep(1000);
-                                Path fullPath = dir.resolve(filename);
-                                Map<String, InformationSource> newSources = informationSourceFactory.createInformationSources(path);
-                                if (!newSources.isEmpty()) {
-                                    noticracia.addNewInformationSources(newSources);
-                                }
+                                Thread.sleep(1000); // Espera para evitar inconsistencias
+                                Map<String, InformationSource> newSources =
+                                        informationSourceFactory.createInformationSources(path);
+                                onNewSourcesDetected.accept(newSources);
                             }
                         }
 
@@ -68,10 +49,9 @@ public class PathWatcher {
                             break;
                         }
                     }
-                } catch (ClosedWatchServiceException cwse) {
-                    System.out.println("Watch Service closed, " + cwse.getMessage());
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    System.err.println("Error in PathWatcher: " + e.getMessage());
+                    watchPath(path, onNewSourcesDetected); // Reinicia el monitoreo
                 }
             });
 
