@@ -4,6 +4,14 @@ import noticracia.entities.InformationSource;
 
 import java.util.*;
 
+/**
+ * Clase principal del núcleo de Noticracia.
+ * Esta clase administra las fuentes de información disponibles y proporciona
+ * métodos para recuperar información de candidatos políticos específicos desde
+ * fuentes determinadas. También permite la adición dinámica de nuevas fuentes
+ * de información.
+ * @author Noticracia
+ */
 public class NoticraciaCore {
 
     private final Map<String, InformationSource> informationSources;

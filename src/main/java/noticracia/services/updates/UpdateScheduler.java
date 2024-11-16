@@ -8,6 +8,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Clase para programar actualizaciones automáticas de datos en Noticracia.
+ * Esta clase utiliza un ejecutor programado para realizar actualizaciones periódicas
+ * de las fuentes de información de acuerdo con un intervalo especificado.
+ * @author Noticracia
+ */
 public class UpdateScheduler {
 
     private final Noticracia noticracia;

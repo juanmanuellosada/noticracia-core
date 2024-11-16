@@ -6,6 +6,14 @@ import noticracia.services.updates.UpdateScheduler;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Clase principal que representa el sistema Noticracia.
+ * Esta clase gestiona el procesamiento de información desde diferentes fuentes,
+ * la generación de nubes de palabras y la programación de actualizaciones.
+ * Utiliza el patrón Observer para notificar a los observadores cuando se generan
+ * nuevas nubes de palabras.
+ * @author Noticracia
+ */
 @SuppressWarnings("deprecation")
 public class Noticracia extends Observable {
 

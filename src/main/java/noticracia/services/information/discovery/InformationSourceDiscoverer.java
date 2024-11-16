@@ -13,7 +13,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarFile;
 
-
+/**
+ * Servicio para descubrir implementaciones de fuentes de información desde archivos JAR.
+ * Esta clase escanea un directorio especificado en busca de archivos JAR, carga su contenido
+ * e identifica clases que implementen la interfaz {@link InformationSource}.
+ * @author Noticracia
+ */
 public class InformationSourceDiscoverer {
     private final Set<Class<? extends InformationSource>> classes = new HashSet<>();
 

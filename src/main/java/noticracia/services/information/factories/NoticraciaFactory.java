@@ -11,6 +11,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Fábrica para crear instancias del sistema Noticracia.
+ * Esta clase valida un directorio, descubre nuevas fuentes de información, las agrega
+ * al núcleo de Noticracia y configura el monitoreo de nuevas fuentes mediante un
+ * observador del sistema de archivos.
+ * @author Noticracia
+ */
 public class NoticraciaFactory {
 
     public Noticracia createNoticracia(String path) {

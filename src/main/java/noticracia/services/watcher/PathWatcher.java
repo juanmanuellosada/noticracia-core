@@ -2,15 +2,24 @@ package noticracia.services.watcher;
 
 import noticracia.core.Noticracia;
 import noticracia.entities.InformationSource;
+import noticracia.services.information.discovery.InformationSourceDiscoverer;
 import noticracia.services.information.factories.InformationSourceFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
+/**
+ * Observador de directorios para detectar nuevos archivos JAR.
+ * Esta clase supervisa un directorio en busca de nuevos archivos JAR y, cuando los encuentra,
+ * procesa las clases descubiertas para agregarlas al sistema.
+ * @author Noticracia
+ */
 public class PathWatcher {
     private final InformationSourceFactory informationSourceFactory = new InformationSourceFactory();
 
@@ -39,7 +48,10 @@ public class PathWatcher {
                             if (filename.toString().endsWith(".jar")) {
                                 Thread.sleep(1000); // Espera para evitar inconsistencias
                                 Map<String, InformationSource> newSources =
-                                        informationSourceFactory.createInformationSources(path);
+                                        informationSourceFactory
+                                                .createInformationSources(new InformationSourceDiscoverer().discover(path))
+                                                .stream()
+                                                .collect(Collectors.toMap(InformationSource::getName, Function.identity()));
                                 onNewSourcesDetected.accept(newSources);
                             }
                         }
